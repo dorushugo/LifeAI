@@ -70,8 +70,7 @@ export default async function RootLayout({
             />
             <div className="flex flex-row w-full">
               {/* Sidebar */}
-              <Sidebar className="hidden md:block border-r border-[#e6d5c3] bg-[#faf6f1] min-w-7xl" />
-              <div className="flex-1 max-w-[88vw]">{children}</div>
+              <div className="flex-1 ">{children}</div>
             </div>
           </TooltipProvider>
         </ChatProvider>
