@@ -53,6 +53,9 @@ importers:
       next:
         specifier: 15.1.6
         version: 15.1.6(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      ollama-ai-provider:
+        specifier: ^1.2.0
+        version: 1.2.0(zod@3.24.1)
       pg:
         specifier: ^8.13.1
         version: 8.13.1
@@ -2515,6 +2518,15 @@ packages:
   obuf@1.1.2:
     resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
 
+  ollama-ai-provider@1.2.0:
+    resolution: {integrity: sha512-jTNFruwe3O/ruJeppI/quoOUxG7NA6blG3ZyQj3lei4+NnJo7bi3eIRWqlVpRlu/mbzbFXeJSBuYQWF6pzGKww==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.0.0
+    peerDependenciesMeta:
+      zod:
+        optional: true
+
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -2540,6 +2552,9 @@ packages:
 
   parse-entities@4.0.2:
     resolution: {integrity: sha512-GG2AQYWoLgL877gQIKeRPGO1xF9+eG1ujIb5soS5gPvLQ1y2o8FL90w2QWNdf9I361Mpp7726c+lj3U0qK1uGw==}
+
+  partial-json@0.1.7:
+    resolution: {integrity: sha512-Njv/59hHaokb/hRUjce3Hdv12wd60MtM9Z5Olmn+nehe0QDAsRtRbJPvJ0Z91TusF0SuZRIvnM+S4l6EIP8leA==}
 
   path-exists@4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
@@ -5707,6 +5722,14 @@ snapshots:
 
   obuf@1.1.2: {}
 
+  ollama-ai-provider@1.2.0(zod@3.24.1):
+    dependencies:
+      '@ai-sdk/provider': 1.0.7
+      '@ai-sdk/provider-utils': 2.1.6(zod@3.24.1)
+      partial-json: 0.1.7
+    optionalDependencies:
+      zod: 3.24.1
+
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -5745,6 +5768,8 @@ snapshots:
       is-alphanumerical: 2.0.1
       is-decimal: 2.0.1
       is-hexadecimal: 2.0.1
+
+  partial-json@0.1.7: {}
 
   path-exists@4.0.0: {}
 
