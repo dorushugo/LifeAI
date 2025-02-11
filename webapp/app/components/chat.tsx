@@ -462,9 +462,11 @@ export default function Chat() {
                   message.role === "user" ? "text-blue-200" : "text-gray-400"
                 }`}
               >
-                {new Date(message.createdAt).toLocaleTimeString("fr-FR", {
-                  timeStyle: "short",
-                })}
+                {message.createdAt
+                  ? new Date(message.createdAt).toLocaleTimeString("fr-FR", {
+                      timeStyle: "short",
+                    })
+                  : "Date inconnue"}
               </div>
             </div>
           </div>
