@@ -8,7 +8,7 @@ export default function QuestionReponse({
   setUser: (user: User) => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center h-screen text-white bg-black">
+    <div className="flex flex-col items-center justify-center h-screen text-white bg-[#F1F1F1]] text-[#191919]">
       <p>
         {user.gender === "male" ? "Homme" : "Femme"}, vous avez {user.age} ans.
       </p>

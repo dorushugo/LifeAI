@@ -1,0 +1,32 @@
+<svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="2.53809" y="6" width="27.9231" height="12" fill="#F91615"/>
+<rect x="5.07715" y="2.99976" width="7.61538" height="12" fill="#F91615"/>
+<rect x="20.3076" y="2.99976" width="7.61538" height="12" fill="#F91615"/>
+<rect x="10.1538" y="21" width="12.6923" height="3" fill="#F91615"/>
+<rect x="7.61523" y="18" width="17.7692" height="3" fill="#F91615"/>
+<rect x="12.6924" y="24.0002" width="7.61538" height="3" fill="#F91615"/>
+<rect x="15.2305" y="27" width="2.53846" height="3" fill="#F91615"/>
+<rect x="5.07715" width="7.61538" height="3" fill="#EAEAEA"/>
+<rect y="14.9998" width="8.99999" height="2.53846" transform="rotate(-90 0 14.9998)" fill="#EAEAEA"/>
+<rect x="12.6924" y="2.99976" width="2.53846" height="3" fill="#EAEAEA"/>
+<rect x="2.53809" y="14.9998" width="2.53846" height="3" fill="#EAEAEA"/>
+<rect x="5.07715" y="18" width="2.53846" height="3" fill="#EAEAEA"/>
+<rect x="7.61523" y="21" width="2.53846" height="3" fill="#EAEAEA"/>
+<rect x="10.1538" y="24.0002" width="2.53846" height="3" fill="#EAEAEA"/>
+<rect x="12.6924" y="27" width="2.53846" height="3" fill="#EAEAEA"/>
+<rect x="15.2305" y="30.0002" width="2.53846" height="3" fill="#EAEAEA"/>
+<rect width="2.53846" height="3" transform="matrix(1 0 0 -1 17.7695 30.0002)" fill="#EAEAEA"/>
+<rect width="2.53846" height="3" transform="matrix(1 0 0 -1 20.3076 27)" fill="#EAEAEA"/>
+<rect width="2.53846" height="3" transform="matrix(1 0 0 -1 22.8462 24.0002)" fill="#EAEAEA"/>
+<rect width="2.53846" height="3" transform="matrix(1 0 0 -1 25.3848 21)" fill="#EAEAEA"/>
+<rect width="2.53846" height="3" transform="matrix(1 0 0 -1 27.9229 18)" fill="#EAEAEA"/>
+<rect x="2.53809" y="2.99976" width="2.53846" height="3" fill="#EAEAEA"/>
+<rect width="7.61538" height="3" transform="matrix(-1 0 0 1 27.9229 0)" fill="#EAEAEA"/>
+<rect width="8.99999" height="2.53846" transform="matrix(0 -1 -1 0 33 14.9998)" fill="#EAEAEA"/>
+<rect width="2.53846" height="3" transform="matrix(-1 0 0 1 20.3076 2.99976)" fill="#EAEAEA"/>
+<rect width="2.53846" height="3" transform="matrix(-1 0 0 1 30.4619 2.99976)" fill="#EAEAEA"/>
+<rect width="2.53846" height="3" transform="matrix(-1 0 0 1 25.3848 6)" fill="#FAFAFA"/>
+<rect width="2.53846" height="3" transform="matrix(-1 0 0 1 27.9229 6)" fill="#FAFAFA"/>
+<rect width="2.53846" height="3" transform="matrix(-1 0 0 1 27.9229 8.99976)" fill="#FAFAFA"/>
+<rect x="15.2305" y="6" width="2.53846" height="3" fill="#EAEAEA"/>
+</svg>

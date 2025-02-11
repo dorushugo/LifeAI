@@ -24,6 +24,8 @@ interface GameState {
   age: number;
   psychologicalProfile: string;
   interactionCount: number;
+  QI : number;
+  socialSkills : number;
 }
 
 type ExtendedMessage = {
@@ -35,6 +37,8 @@ type ExtendedMessage = {
     moneyChange: number;
     karmaChange: number;
     psychologicalProfile: string;
+    QIChange: number;
+    socialSkillsChange: number;
     question?: {
       text: string;
       options: {
@@ -52,6 +56,8 @@ interface AIResponse {
     moneyChange: number;
     karmaChange: number;
     psychologicalProfile: string;
+    QIChange: number;
+    socialSkillsChange: number;
     message: string;
     question?: {
       text: string;
@@ -72,6 +78,8 @@ export default function Chat() {
     age: 0,
     psychologicalProfile: "Curieux",
     interactionCount: 0,
+    QI: 0,
+    socialSkills: 0,
   });
 
   console.log("État initial du jeu:", JSON.stringify(gameState, null, 2));

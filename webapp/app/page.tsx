@@ -4,6 +4,7 @@ import GenderChoice from "@/app/components/GenderChoice";
 import Chat from "@/app/components/chat";
 import QuestionReponse from "@/app/components/QuestionReponse";
 import { motion } from "framer-motion";
+import Sidebar from "@/app/components/Sidebar";
 
 export interface User {
   gender: string;
@@ -80,10 +81,17 @@ export default function Home() {
     user?.gender === ""
   ) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-black">
+      <div className="flex flex-col items-center justify-center h-screen bg-black"> 
         <GenderChoice user={user} setUser={setUser} />
       </div>
     );
   }
-  return <QuestionReponse user={user} setUser={setUser} />;
+  return (
+    <div className="flex h-screen">
+      <Sidebar user={user} className="flex-shrink-0" />
+      <div className="flex-1 overflow-auto">
+        <QuestionReponse user={user} setUser={setUser} />
+      </div>
+    </div>
+  );
 }
