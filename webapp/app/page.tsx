@@ -5,6 +5,7 @@ import Chat from "@/app/components/chat";
 import QuestionReponse from "@/app/components/QuestionReponse";
 import { motion } from "framer-motion";
 import Sidebar from "@/app/components/Sidebar";
+import Image from "next/image";
 
 export interface User {
   gender: string;
@@ -79,7 +80,7 @@ export default function Home() {
               transition: { type: "spring", stiffness: 400 },
             }}
           >
-            Débuter
+            Commencer
           </motion.button>
         </motion.div>
       </div>
@@ -97,6 +98,53 @@ export default function Home() {
       </div>
     );
   }
+
+  if (user?.health <= 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-[#191919]"
+        style={{ backgroundImage: "url('/Background.svg')" }}
+      >
+        <div className="flex flex-col items-center justify-center">
+        <h1 className="text-white text-[100px] pb-[61px]">Game Over</h1>
+        <Image src="/GameOver.svg" alt="Game Over" width={144} height={144} />
+
+        <motion.div
+          onClick={() => window.location.href = "/"}
+          className="cursor-pointer mt-20 relative pb-2 border-t-0 text-2xl text-white rounded-[20px] shadow-[inset_0_0_0_4px_white] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0"
+          variants={{
+            initial: { paddingBottom: "15px" },
+            hover: {
+              scale: 1.05,
+              transition: { type: "spring", stiffness: 300 },
+            },
+          }}
+          initial="initial"
+          whileHover="hover"
+        >
+          <motion.button
+            className="relative px-16 py-2 text-2xl text-white rounded-[20px] border-4 border-white transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#191919] before:rounded-[20px]"
+            variants={{
+              initial: { y: 0 },
+              hover: {
+                scale: 1.05,
+                y: -5,
+                transition: { type: "spring", stiffness: 400 },
+              },
+            }}
+            whileTap={{
+              scale: 0.95,
+              y: 0,
+              transition: { type: "spring", stiffness: 400 },
+            }}
+          >
+            Recommencer
+          </motion.button>
+        </motion.div>
+      </div>  
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen">
       <Sidebar user={user} className="flex-shrink-0" />

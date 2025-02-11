@@ -38,6 +38,12 @@ export default function QuestionReponse({
       </button>
       <button
         className="m-2 p-2 bg-blue-500 text-white rounded"
+        onClick={() => setUser({ ...user, money: user.money - 5 })}
+      >
+        -5 Money
+      </button>
+      <button
+        className="m-2 p-2 bg-blue-500 text-white rounded"
         onClick={() => setUser({ ...user, karma: user.karma + 5 })}
       >
         +5 Karma
@@ -47,6 +53,12 @@ export default function QuestionReponse({
         onClick={() => setUser({ ...user, socialSkills: user.socialSkills + 5 })}
       >
         +5 Social Skills
+      </button>
+      <button
+        className="m-2 p-2 bg-blue-500 text-white rounded"
+        onClick={() => setUser({ ...user, socialSkills: user.socialSkills - 5 })}
+      >
+        -5 Social Skills
       </button>
     </div>
   );

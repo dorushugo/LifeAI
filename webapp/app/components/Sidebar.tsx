@@ -53,7 +53,7 @@ export default function Sidebar({ user }: { user: User | null }) {
             </li>
             <li className="flex items-center space-x-2">
               <Image src="/Argent.svg" alt="Money" width={33} height={33} />
-              <span className="text-[24px]">+{user?.money}K</span>
+              <span className="text-[24px]">{user?.money}K</span>
             </li>
             <li className="flex items-center space-x-2">
               <Image src="/Social.svg" alt="Social Skills" width={33} height={33} />
