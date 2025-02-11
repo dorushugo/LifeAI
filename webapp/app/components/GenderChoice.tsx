@@ -10,16 +10,22 @@ export default function GenderChoice({
 }) {
   // on va avoir un sélecteur avec deux images, une d'un homme, une d'une femme, quand on clique dessus on change le gender.
   return (
-    <div className="flex flex-col items-center justify-center h-screen text-white">
-      <h1>Gender choice</h1>
-      <div className="flex flex-row items-center justify-center">
+    <div
+      className="flex flex-col items-center justify-center h-screen bg-[#191919] bg-cover bg-center w-full"
+      style={{ backgroundImage: "url('/Background.svg')" }}
+    >
+      <h1 className="text-[100px] font-regular mb-[99px] text-[#F1F1F1]">
+        Tu es ?
+      </h1>
+
+      <div className="flex flex-row items-center justify-center gap-x-[99px]">
         <Image
           onClick={() => setUser({ ...user, gender: "male" })}
           src="Homme.svg"
           alt="man"
           width={100}
           height={100}
-          className="cursor-pointer"
+          className="cursor-pointer transition-transform duration-300 hover:scale-110"
         />
         <Image
           onClick={() => setUser({ ...user, gender: "female" })}
@@ -27,7 +33,7 @@ export default function GenderChoice({
           alt="woman"
           width={100}
           height={100}
-          className="cursor-pointer"
+          className="cursor-pointer transition-transform duration-300 hover:scale-110"
         />
       </div>
     </div>
