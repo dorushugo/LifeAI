@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "ai/react";
-import { Send, SparklesIcon } from "lucide-react";
+import { Send, SparklesIcon, Heart, Star, MapPin } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import { Markdown } from "@/app/components/markdown";
 
@@ -11,37 +11,26 @@ interface GameState {
   currentScene: string;
 }
 
-interface ToolCallArgs {
-  healthChange?: number;
-  scoreChange?: number;
-  nextScene?: string;
-  nextChoices?: string[];
-}
-
-interface MessageContent {
-  type: "text" | "tool-call";
-  text?: string;
-  toolName?: string;
-  args?: ToolCallArgs;
-  toolCallId?: string;
-}
-
-interface AIResponse {
-  text: string;
-  toolCalls?: Array<{
-    type: string;
-    toolCallId: string;
-    toolName: string;
-    args: ToolCallArgs;
-  }>;
-  gameState?: GameState;
-}
-
 type ExtendedMessage = {
   id: string;
   role: "user" | "assistant" | "system";
-  content: string | MessageContent[];
+  content: string;
+  structuredData?: {
+    healthChange: number;
+    scoreChange: number;
+    nextScene: string;
+  };
 };
+
+interface AIResponse {
+  text: string;
+  structuredOutput?: {
+    healthChange: number;
+    scoreChange: number;
+    nextScene: string;
+    message: string;
+  };
+}
 
 export default function Chat() {
   const [gameState, setGameState] = useState<GameState>({
@@ -53,7 +42,7 @@ export default function Chat() {
   console.log("État initial du jeu:", JSON.stringify(gameState, null, 2));
 
   const { messages, input, handleInputChange, handleSubmit } = useChat({
-    api: "/api/chat",
+    api: "/api/chat/structured",
     body: { gameState },
     streamProtocol: "text",
     onResponse: async (response: Response) => {
@@ -63,36 +52,50 @@ export default function Chat() {
         const data: AIResponse = await clonedResponse.json();
         console.log("Données de réponse:", JSON.stringify(data, null, 2));
 
-        if (data.gameState) {
+        if (data.structuredOutput) {
           setGameState((prev: GameState) => {
-            const newState = { ...prev, ...data.gameState };
-            console.log(
-              "Mise à jour de l'état du jeu:",
-              JSON.stringify(newState, null, 2)
+            const newHealth = Math.max(
+              0,
+              Math.min(100, prev.health + data.structuredOutput!.healthChange)
             );
-            return newState;
-          });
-        }
+            const newScore = prev.score + data.structuredOutput!.scoreChange;
+            const newScene =
+              data.structuredOutput!.nextScene || prev.currentScene;
 
-        if (data.toolCalls && data.toolCalls.length > 0) {
-          data.toolCalls.forEach((toolCall) => {
-            if (toolCall.toolName === "updateGameState" && toolCall.args) {
-              setGameState((prev: GameState) => {
-                const healthChange = toolCall.args.healthChange ?? 0;
-                const scoreChange = toolCall.args.scoreChange ?? 0;
-                const newHealth = Math.max(
-                  0,
-                  Math.min(100, prev.health + healthChange)
-                );
-                return {
-                  ...prev,
+            console.log(
+              "Nouvel état du jeu:",
+              JSON.stringify(
+                {
                   health: newHealth,
-                  score: prev.score + scoreChange,
-                  currentScene: toolCall.args.nextScene || prev.currentScene,
-                };
-              });
-            }
+                  score: newScore,
+                  currentScene: newScene,
+                },
+                null,
+                2
+              )
+            );
+
+            return {
+              ...prev,
+              health: newHealth,
+              score: newScore,
+              currentScene: newScene,
+            };
           });
+
+          if (data.structuredOutput.message) {
+            const newMessage: ExtendedMessage = {
+              id: Date.now().toString(),
+              role: "assistant",
+              content: data.structuredOutput.message,
+              structuredData: {
+                healthChange: data.structuredOutput.healthChange,
+                scoreChange: data.structuredOutput.scoreChange,
+                nextScene: data.structuredOutput.nextScene,
+              },
+            };
+            messages.push(newMessage);
+          }
         }
       } catch (error) {
         console.error("Erreur lors du parsing de la réponse:", error);
@@ -134,209 +137,207 @@ export default function Chat() {
   console.log("Etat des messages:", JSON.stringify(messages, null, 2));
   console.log("Entrée utilisateur:", input);
 
-  const renderToolCall = (toolCall: MessageContent) => {
-    if (!toolCall.args) return null;
-
-    switch (toolCall.toolName) {
-      case "updateGameState":
-        return (
-          <div className="space-y-3 bg-blue-50 p-4 rounded-lg border border-blue-200 my-4">
-            <div className="flex items-center gap-2 text-blue-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M5 8h14v10h-14V8zm7.5-5a1 1 0 0 1 1 1v1h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3V4a1 1 0 0 1 1-1h3.5z" />
-              </svg>
-              <h3 className="font-semibold">Mise à jour du jeu</h3>
-            </div>
-
-            {(toolCall.args.healthChange ?? 0) !== 0 && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-24 font-medium">Santé :</span>
-                <span
-                  className={`px-2 py-1 rounded ${
-                    toolCall.args.healthChange! > 0
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {toolCall.args.healthChange! > 0 ? "+" : ""}
-                  {toolCall.args.healthChange}%
-                </span>
-              </div>
-            )}
-
-            {(toolCall.args.scoreChange ?? 0) !== 0 && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-24 font-medium">Score :</span>
-                <span
-                  className={`px-2 py-1 rounded ${
-                    toolCall.args.scoreChange! > 0
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                >
-                  {toolCall.args.scoreChange! > 0 ? "+" : ""}
-                  {toolCall.args.scoreChange}
-                </span>
-              </div>
-            )}
-
-            {toolCall.args.nextScene && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-24 font-medium">Nouvelle scène :</span>
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">
-                  {toolCall.args.nextScene}
-                </span>
-              </div>
-            )}
-
-            {toolCall.args.nextChoices && (
-              <div className="mt-3 pt-3 border-t border-blue-100">
-                <h4 className="text-sm font-medium mb-2 text-blue-600">
-                  Choix disponibles :
-                </h4>
-                <ul className="list-disc list-inside space-y-1">
-                  {toolCall.args.nextChoices.map((choice, index) => (
-                    <li key={index} className="text-sm text-gray-700">
-                      {choice}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
   const renderMessage = (message: ExtendedMessage) => {
-    let content: MessageContent[] = [];
-    let toolCalls: Array<{
-      type: string;
-      toolCallId: string;
-      toolName: string;
-      args: ToolCallArgs;
-    }> = [];
-
-    try {
-      const parsed =
-        typeof message.content === "string"
-          ? JSON.parse(message.content)
-          : message.content;
-
-      if (parsed.messages) {
-        content = parsed.messages[0].content;
-        toolCalls = parsed.toolCalls || [];
-      } else if (Array.isArray(parsed)) {
-        content = parsed;
-      } else {
-        content = parsed.content || [];
-        toolCalls = parsed.toolCalls || [];
-      }
-    } catch {
-      content = [{ type: "text", text: message.content as string }];
-    }
-
-    return (
-      <div className="space-y-4">
-        {content.map((part, index) => (
-          <div key={`text-${index}`} className="prose prose-sm max-w-none">
-            <Markdown>{part.text}</Markdown>
-          </div>
-        ))}
-
-        {toolCalls.map((toolCall, index) => (
-          <div key={`tool-${index}`} className="my-4">
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <div className="flex items-center gap-2 text-blue-600 mb-3">
-                <SparklesIcon className="h-5 w-5" />
-                <span className="font-semibold">Mise à jour du jeu</span>
-              </div>
-              {renderToolCall({
-                type: "tool-call",
-                toolName: toolCall.toolName,
-                args: toolCall.args,
-                toolCallId: toolCall.toolCallId,
-              })}
+    if (message.role === "assistant") {
+      const json = JSON.parse(message.content);
+      console.log("JSON:", json);
+      return (
+        <div className="prose prose-sm max-w-none text-white">
+          <Markdown>{json.text}</Markdown>
+          <div className="flex gap-3 flex-wrap">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
+              <Heart
+                className={`w-4 h-4 ${
+                  json.structuredOutput.healthChange >= 0
+                    ? "text-green-400 fill-green-400/20"
+                    : "text-red-400 fill-red-400/20"
+                }`}
+              />
+              <span
+                className={`text-sm  font-medium ${
+                  json.structuredOutput.healthChange >= 0
+                    ? "text-white"
+                    : "text-white"
+                }`}
+              >
+                {json.structuredOutput.healthChange > 0
+                  ? "+"
+                  : json.structuredOutput.healthChange < 0
+                  ? "-"
+                  : ""}
+                {json.structuredOutput.healthChange}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
+              <Star
+                className={`w-4 h-4 ${
+                  json.structuredOutput.scoreChange >= 0
+                    ? "text-yellow-400 fill-yellow-400/20"
+                    : "text-red-400 fill-red-400/20"
+                }`}
+              />
+              <span
+                className={`text-sm font-medium ${
+                  json.structuredOutput.scoreChange >= 0
+                    ? "text-yellow-400"
+                    : "text-red-400"
+                }`}
+              >
+                {json.structuredOutput.scoreChange > 0 ? "+" : ""}
+                {json.structuredOutput.scoreChange}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
+              <MapPin className="w-4 h-4 text-blue-400 fill-blue-400/20" />
+              <span className="text-sm font-medium text-blue-400">
+                {json.structuredOutput.nextScene}
+              </span>
             </div>
           </div>
-        ))}
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-3">
+        <Markdown>{message.content}</Markdown>
+
+        {message.structuredData && (
+          <div className="flex gap-3 flex-wrap">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
+              <Heart
+                className={`w-4 h-4 ${
+                  message.structuredData.healthChange >= 0
+                    ? "text-green-400 fill-green-400/20"
+                    : "text-red-400 fill-red-400/20"
+                }`}
+              />
+              <span
+                className={`text-sm font-medium ${
+                  message.structuredData.healthChange >= 0
+                    ? "text-green-400"
+                    : "text-red-400"
+                }`}
+              >
+                {message.structuredData.healthChange > 0 ? "+" : ""}
+                {message.structuredData.healthChange}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
+              <Star
+                className={`w-4 h-4 ${
+                  message.structuredData.scoreChange >= 0
+                    ? "text-yellow-400 fill-yellow-400/20"
+                    : "text-red-400 fill-red-400/20"
+                }`}
+              />
+              <span
+                className={`text-sm font-medium ${
+                  message.structuredData.scoreChange >= 0
+                    ? "text-yellow-400"
+                    : "text-red-400"
+                }`}
+              >
+                {message.structuredData.scoreChange > 0 ? "+" : ""}
+                {message.structuredData.scoreChange}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
+              <MapPin className="w-4 h-4 text-blue-400 fill-blue-400/20" />
+              <span className="text-sm font-medium text-blue-400">
+                {message.structuredData.nextScene}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* Barre d'état du jeu */}
-      <div className="bg-white p-4 border-b flex justify-between items-center">
-        <div className="flex gap-4">
-          <span className="flex items-center gap-1">
-            <span>❤️</span>
-            <span
-              className={`font-medium ${
-                gameState.health < 30 ? "text-red-600" : ""
-              }`}
-            >
-              {gameState.health}%
-            </span>
-          </span>
-          <span className="flex items-center gap-1">
-            <span>⭐</span>
-            <span className="font-medium">{gameState.score}</span>
-          </span>
+    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Barre d'état style HUD jeu vidéo */}
+      <div className="bg-gray-900/80 backdrop-blur-sm p-4 border-b border-gray-700 flex justify-between items-center shadow-xl">
+        <div className="flex gap-6">
+          <div className="flex items-center gap-2 text-red-400">
+            <Heart className="w-5 h-5 fill-red-500/20 stroke-red-500" />
+            <span className="font-bold text-lg">{gameState.health}%</span>
+          </div>
+          <div className="flex items-center gap-2 text-yellow-400">
+            <Star className="w-5 h-5 fill-yellow-500/20 stroke-yellow-500" />
+            <span className="font-bold text-lg">{gameState.score}</span>
+          </div>
         </div>
-        <span className="flex items-center gap-1">
-          <span>📍</span>
-          <span className="font-medium">{gameState.currentScene}</span>
-        </span>
+        <div className="flex items-center gap-2 text-blue-400">
+          <MapPin className="w-5 h-5 fill-blue-500/20 stroke-blue-500" />
+          <span className="font-bold text-lg">{gameState.currentScene}</span>
+        </div>
       </div>
 
-      {/* Zone de messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Zone de messages revisité */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${
               message.role === "user" ? "justify-end" : "justify-start"
-            }`}
+            } transition-all duration-300`}
           >
             <div
-              className={`max-w-[80%] rounded-lg p-4 ${
+              className={`relative max-w-[75%] rounded-xl p-5 shadow-lg ${
                 message.role === "user"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-800 shadow-md"
+                  ? "bg-gradient-to-br from-blue-700 to-blue-600 text-white"
+                  : "bg-gradient-to-br from-gray-800 to-gray-700 border border-gray-600"
               }`}
             >
+              {/* Triangle décoratif */}
+              <div
+                className={`absolute top-4 w-3 h-3 transform rotate-45 ${
+                  message.role === "user"
+                    ? "-right-1.5 bg-blue-600"
+                    : "-left-1.5 bg-gray-700"
+                }`}
+              />
+
               {renderMessage(message as ExtendedMessage)}
+
+              {/* Timestamp style jeu */}
+              <div
+                className={`mt-3 text-xs ${
+                  message.role === "user" ? "text-blue-200" : "text-gray-400"
+                }`}
+              >
+                {new Date(message.createdAt).toLocaleTimeString("fr-FR", {
+                  timeStyle: "short",
+                })}
+              </div>
             </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Formulaire d'envoi */}
+      {/* Formulaire style terminal de jeu */}
       <form
         onSubmit={handleFormSubmit}
-        className="sticky bottom-0 bg-white border-t p-4"
+        className="sticky bottom-0 bg-gray-900/90 backdrop-blur-sm border-t border-gray-700 p-4 shadow-2xl"
       >
-        <div className="max-w-3xl mx-auto flex gap-2">
+        <div className="max-w-3xl mx-auto flex gap-3">
           <textarea
             value={input}
             onChange={handleInputChange}
-            placeholder="Que voulez-vous faire ?"
-            className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Entrez votre action..."
+            className="flex-1 p-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                     transition-all resize-none"
             rows={1}
           />
           <button
             type="submit"
             disabled={!input}
-            className="p-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 hover:bg-blue-700 transition-colors"
+            className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50
+                     transition-all hover:scale-105 active:scale-95 shadow-md"
           >
             <Send className="w-5 h-5" />
           </button>
