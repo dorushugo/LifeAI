@@ -8,7 +8,7 @@ export default function Sidebar({ user }: { user: User | null }) {
       style={{ 
         backgroundColor: '#191919',
         width: '329px',
-        padding: '56px 47px', // 56px haut/bas, 47px gauche/droite
+        padding: '56px 30px', // 56px haut/bas, 47px gauche/droite
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -43,7 +43,30 @@ export default function Sidebar({ user }: { user: User | null }) {
         <p className="text-[24px] text-[#F1F1F1] mt-[18px] pb-[61px]">
           {user?.gender === 'male' ? 'Homme' : 'Femme'}
         </p>
+
+        {/* Nouvelle section pour afficher les statistiques */}
+        <div className="p-4 text-white">
+          <ul className="grid grid-cols-2 gap-4">
+            <li className="flex items-center space-x-2">
+              <Image src="/Coeur.svg" alt="Health" width={33} height={33} />
+              <span className="text-[24px]">{user?.health} %</span>
+            </li>
+            <li className="flex items-center space-x-2">
+              <Image src="/Argent.svg" alt="Money" width={33} height={33} />
+              <span className="text-[24px]">+{user?.money}K</span>
+            </li>
+            <li className="flex items-center space-x-2">
+              <Image src="/Social.svg" alt="Social Skills" width={33} height={33} />
+              <span className="text-[24px]">{user?.socialSkills}</span>
+            </li>
+            <li className="flex items-center space-x-2">
+              <Image src="/Karma.svg" alt="Karma" width={33} height={33} />
+              <span className="text-[24px]">{user?.karma}</span>
+            </li>
+          </ul>
+        </div>
       </div>
+      
     </div>
   );
 }

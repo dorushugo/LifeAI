@@ -16,6 +16,7 @@ export interface User {
   time: number;
   interactionCount: number;
   psychologicalProfile: string;
+  socialSkills: number;
 }
 
 export default function Home() {
@@ -30,6 +31,7 @@ export default function Home() {
     time: 0,
     interactionCount: 0,
     psychologicalProfile: "",
+    socialSkills: 0,
   });
 
   if (!asStarted) {
