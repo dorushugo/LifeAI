@@ -37,6 +37,7 @@ export default function Home() {
     QI: Math.floor(Math.random() * (120 - 85 + 1)) + 80,
   });
 
+  // Update QI
   const updateQI = (change: number) => {
     setUser((prevUser) => ({
       ...prevUser,
@@ -44,6 +45,7 @@ export default function Home() {
     }));
   };
 
+  // Start Game
   if (!asStarted) {
     return (
       <div
@@ -99,6 +101,7 @@ export default function Home() {
     );
   }
 
+  // Game Over
   if (user?.health <= 0) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-[#191919]"
@@ -141,6 +144,53 @@ export default function Home() {
           </motion.button>
         </motion.div>
       </div>  
+      </div>
+    );
+  }
+
+  // Victory
+  if (user?.age >= 100) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-[#F1F1F1]">
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-[#191919] text-[100px] pb-[61px] font-regular text-center max-w-[70%]">
+            Bien joué, t'as réussis le jeu de la vie ! Mais...
+          </h1>
+          <Image src="/Victory.svg" alt="Victoire" width={300} height={186.49} />
+
+          <motion.div
+            onClick={() => (window.location.href = "Error.html")}
+            className="cursor-pointer mt-20 relative pb-2 border-t-0 text-2xl text-[#191919] rounded-[20px] shadow-[inset_0_0_0_4px_#191919] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0"
+            variants={{
+              initial: { paddingBottom: "15px" },
+              hover: {
+                scale: 1.05,
+                transition: { type: "spring", stiffness: 300 },
+              },
+            }}
+            initial="initial"
+            whileHover="hover"
+          >
+            <motion.button
+              className="relative px-16 py-2 text-2xl text-[#191919] rounded-[20px] border-4 border-[#191919] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] bg-[#F1F1F1]"
+              variants={{
+                initial: { y: 0 },
+                hover: {
+                  scale: 1.05,
+                  y: -5,
+                  transition: { type: "spring", stiffness: 400 },
+                },
+              }}
+              whileTap={{
+                scale: 0.95,
+                y: 0,
+                transition: { type: "spring", stiffness: 400 },
+              }}
+            >
+              Continuer avec le jeu de la mort ?
+            </motion.button>
+          </motion.div>
+        </div>
       </div>
     );
   }

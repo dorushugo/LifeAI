@@ -72,7 +72,7 @@ export default function Sidebar({ user }: { user: User | null }) {
         </div>
         <div className="flex items-center space-x-2">
             <Image src="/Cerveau.svg" alt="QI" width={33} height={33} />
-            <span className="text-[#F1F1F1] text-[24px]">{user?.QI}</span>
+            <span className="text-[#F1F1F1] text-[24px]">{user?.QI} de QI</span>
         </div>
       </div>
       
