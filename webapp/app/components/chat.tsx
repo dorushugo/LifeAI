@@ -1,24 +1,47 @@
 "use client";
 
 import { useChat } from "ai/react";
-import { Send, SparklesIcon, Heart, Star, MapPin } from "lucide-react";
+import {
+  Send,
+  SparklesIcon,
+  Heart,
+  Star,
+  MapPin,
+  Clock,
+  Coins,
+  Scale,
+  CalendarHeart,
+  Brain,
+} from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import { Markdown } from "@/app/components/markdown";
 
 interface GameState {
   health: number;
-  score: number;
-  currentScene: string;
+  time: number;
+  money: number;
+  karma: number;
+  age: number;
+  psychologicalProfile: string;
+  interactionCount: number;
 }
 
 type ExtendedMessage = {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
-  structuredData?: {
+  structuredOutput?: {
     healthChange: number;
-    scoreChange: number;
-    nextScene: string;
+    moneyChange: number;
+    karmaChange: number;
+    psychologicalProfile: string;
+    question?: {
+      text: string;
+      options: {
+        text: string;
+        effect: string;
+      }[];
+    };
   };
 };
 
@@ -26,24 +49,41 @@ interface AIResponse {
   text: string;
   structuredOutput?: {
     healthChange: number;
-    scoreChange: number;
-    nextScene: string;
+    moneyChange: number;
+    karmaChange: number;
+    psychologicalProfile: string;
     message: string;
+    question?: {
+      text: string;
+      options: {
+        text: string;
+        effect: string;
+      }[];
+    };
   };
 }
 
 export default function Chat() {
   const [gameState, setGameState] = useState<GameState>({
     health: 100,
-    score: 0,
-    currentScene: "start",
+    time: 0,
+    money: 0,
+    karma: 0,
+    age: 0,
+    psychologicalProfile: "Curieux",
+    interactionCount: 0,
   });
 
   console.log("État initial du jeu:", JSON.stringify(gameState, null, 2));
 
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: "/api/chat/structured",
-    body: { gameState },
+    body: {
+      gameState: {
+        ...gameState,
+        interactionCount: gameState.interactionCount,
+      },
+    },
     streamProtocol: "text",
     onResponse: async (response: Response) => {
       console.log("Réponse API reçue:", response);
@@ -54,21 +94,44 @@ export default function Chat() {
 
         if (data.structuredOutput) {
           setGameState((prev: GameState) => {
+            const newInteractionCount = prev.interactionCount + 1;
+            const newAge =
+              newInteractionCount % 5 === 0 ? prev.age + 5 : prev.age;
+
             const newHealth = Math.max(
               0,
-              Math.min(100, prev.health + data.structuredOutput!.healthChange)
+              Math.min(
+                100,
+                prev.health + (data.structuredOutput?.healthChange || 0)
+              )
             );
-            const newScore = prev.score + data.structuredOutput!.scoreChange;
-            const newScene =
-              data.structuredOutput!.nextScene || prev.currentScene;
+
+            const newMoney = Math.max(
+              -10,
+              Math.min(
+                10,
+                prev.money + (data.structuredOutput?.moneyChange || 0)
+              )
+            );
+            const newKarma = Math.max(
+              -10,
+              Math.min(
+                10,
+                prev.karma + (data.structuredOutput?.karmaChange || 0)
+              )
+            );
+            const newPsychologicalProfile =
+              data.structuredOutput!.psychologicalProfile;
 
             console.log(
               "Nouvel état du jeu:",
               JSON.stringify(
                 {
                   health: newHealth,
-                  score: newScore,
-                  currentScene: newScene,
+                  money: newMoney,
+                  karma: newKarma,
+                  age: newAge,
+                  psychologicalProfile: newPsychologicalProfile,
                 },
                 null,
                 2
@@ -78,8 +141,11 @@ export default function Chat() {
             return {
               ...prev,
               health: newHealth,
-              score: newScore,
-              currentScene: newScene,
+              money: newMoney,
+              karma: newKarma,
+              age: newAge,
+              psychologicalProfile: newPsychologicalProfile,
+              interactionCount: newInteractionCount,
             };
           });
 
@@ -88,10 +154,13 @@ export default function Chat() {
               id: Date.now().toString(),
               role: "assistant",
               content: data.structuredOutput.message,
-              structuredData: {
+              structuredOutput: {
                 healthChange: data.structuredOutput.healthChange,
-                scoreChange: data.structuredOutput.scoreChange,
-                nextScene: data.structuredOutput.nextScene,
+                moneyChange: data.structuredOutput.moneyChange,
+                karmaChange: data.structuredOutput.karmaChange,
+                psychologicalProfile:
+                  data.structuredOutput.psychologicalProfile,
+                question: data.structuredOutput.question,
               },
             };
             messages.push(newMessage);
@@ -139,114 +208,181 @@ export default function Chat() {
 
   const renderMessage = (message: ExtendedMessage) => {
     if (message.role === "assistant") {
-      const json = JSON.parse(message.content);
-      console.log("JSON:", json);
-      return (
-        <div className="prose prose-sm max-w-none text-white">
-          <Markdown>{json.text}</Markdown>
-          <div className="flex gap-3 flex-wrap">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
-              <Heart
-                className={`w-4 h-4 ${
-                  json.structuredOutput.healthChange >= 0
-                    ? "text-green-400 fill-green-400/20"
-                    : "text-red-400 fill-red-400/20"
-                }`}
-              />
-              <span
-                className={`text-sm  font-medium ${
-                  json.structuredOutput.healthChange >= 0
-                    ? "text-white"
-                    : "text-white"
-                }`}
-              >
-                {json.structuredOutput.healthChange > 0
-                  ? "+"
-                  : json.structuredOutput.healthChange < 0
-                  ? "-"
-                  : ""}
-                {json.structuredOutput.healthChange}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
-              <Star
-                className={`w-4 h-4 ${
-                  json.structuredOutput.scoreChange >= 0
-                    ? "text-yellow-400 fill-yellow-400/20"
-                    : "text-red-400 fill-red-400/20"
-                }`}
-              />
-              <span
-                className={`text-sm font-medium ${
-                  json.structuredOutput.scoreChange >= 0
-                    ? "text-yellow-400"
-                    : "text-red-400"
-                }`}
-              >
-                {json.structuredOutput.scoreChange > 0 ? "+" : ""}
-                {json.structuredOutput.scoreChange}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
-              <MapPin className="w-4 h-4 text-blue-400 fill-blue-400/20" />
-              <span className="text-sm font-medium text-blue-400">
-                {json.structuredOutput.nextScene}
-              </span>
+      try {
+        const parsedJson = JSON.parse(message.content);
+        console.log("Message analysé:", parsedJson);
+        return (
+          <div className="prose prose-sm max-w-none text-white">
+            <Markdown>{parsedJson.text}</Markdown>
+            {parsedJson.structuredOutput?.question && (
+              <div className="mt-4 space-y-3">
+                <div className="text-lg font-bold text-blue-300">
+                  {parsedJson.structuredOutput.question.text}
+                </div>
+                <div className="grid gap-2">
+                  {parsedJson.structuredOutput.question.options.map(
+                    (
+                      option: { text: string; effect: string },
+                      index: number
+                    ) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          handleInputChange({
+                            target: { value: option.text },
+                          } as any);
+                          handleSubmit({ preventDefault: () => {} } as any);
+                        }}
+                        className="p-3 text-left rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors border border-gray-600"
+                      >
+                        <div className="font-medium">{option.text}</div>
+                        <div className="text-sm text-gray-400">
+                          {option.effect}
+                        </div>
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+            <div className="flex gap-3 flex-wrap">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
+                <Heart
+                  className={`w-4 h-4 ${
+                    (parsedJson.structuredOutput?.healthChange ?? 0) >= 0
+                      ? "text-green-400 fill-green-400/20"
+                      : "text-red-400 fill-red-400/20"
+                  }`}
+                />
+                <span
+                  className={`text-sm  font-medium ${
+                    (parsedJson.structuredOutput?.healthChange ?? 0) >= 0
+                      ? "text-white"
+                      : "text-white"
+                  }`}
+                >
+                  {(parsedJson.structuredOutput?.healthChange ?? 0) > 0
+                    ? "+"
+                    : (parsedJson.structuredOutput?.healthChange ?? 0) < 0
+                    ? "-"
+                    : ""}
+                  {parsedJson.structuredOutput?.healthChange}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
+                <Coins
+                  className={`w-4 h-4 ${
+                    (parsedJson.structuredOutput?.moneyChange ?? 0) >= 0
+                      ? "text-green-400 fill-green-400/20"
+                      : "text-red-400 fill-red-400/20"
+                  }`}
+                />
+                <span
+                  className={`text-sm font-medium ${
+                    (parsedJson.structuredOutput?.moneyChange ?? 0) >= 0
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {(parsedJson.structuredOutput?.moneyChange ?? 0) > 0
+                    ? "+"
+                    : ""}
+                  ${parsedJson.structuredOutput?.moneyChange}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
+                <Scale
+                  className={`w-4 h-4 ${
+                    (parsedJson.structuredOutput?.karmaChange ?? 0) >= 0
+                      ? "text-purple-400 fill-purple-400/20"
+                      : "text-red-400 fill-red-400/20"
+                  }`}
+                />
+                <span
+                  className={`text-sm font-medium ${
+                    (parsedJson.structuredOutput?.karmaChange ?? 0) >= 0
+                      ? "text-purple-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {(parsedJson.structuredOutput?.karmaChange ?? 0) > 0
+                    ? "+"
+                    : ""}
+                  {parsedJson.structuredOutput?.karmaChange}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      );
+        );
+      } catch (error) {
+        console.error("Erreur de parsing du message:", error);
+        return <Markdown>{message.content}</Markdown>;
+      }
     }
     return (
       <div className="space-y-3">
         <Markdown>{message.content}</Markdown>
 
-        {message.structuredData && (
+        {message.structuredOutput && (
           <div className="flex gap-3 flex-wrap">
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
               <Heart
                 className={`w-4 h-4 ${
-                  message.structuredData.healthChange >= 0
+                  (message.structuredOutput.healthChange ?? 0) >= 0
                     ? "text-green-400 fill-green-400/20"
                     : "text-red-400 fill-red-400/20"
                 }`}
               />
               <span
                 className={`text-sm font-medium ${
-                  message.structuredData.healthChange >= 0
+                  (message.structuredOutput.healthChange ?? 0) >= 0
                     ? "text-green-400"
                     : "text-red-400"
                 }`}
               >
-                {message.structuredData.healthChange > 0 ? "+" : ""}
-                {message.structuredData.healthChange}
+                {message.structuredOutput.healthChange > 0 ? "+" : ""}
+                {message.structuredOutput.healthChange}
               </span>
             </div>
 
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
-              <Star
+              <Coins
                 className={`w-4 h-4 ${
-                  message.structuredData.scoreChange >= 0
-                    ? "text-yellow-400 fill-yellow-400/20"
+                  message.structuredOutput.moneyChange >= 0
+                    ? "text-green-400 fill-green-400/20"
                     : "text-red-400 fill-red-400/20"
                 }`}
               />
               <span
                 className={`text-sm font-medium ${
-                  message.structuredData.scoreChange >= 0
-                    ? "text-yellow-400"
+                  message.structuredOutput.moneyChange >= 0
+                    ? "text-green-400"
                     : "text-red-400"
                 }`}
               >
-                {message.structuredData.scoreChange > 0 ? "+" : ""}
-                {message.structuredData.scoreChange}
+                {message.structuredOutput.moneyChange > 0 ? "+" : ""}$
+                {message.structuredOutput.moneyChange}
               </span>
             </div>
 
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/50 rounded-full">
-              <MapPin className="w-4 h-4 text-blue-400 fill-blue-400/20" />
-              <span className="text-sm font-medium text-blue-400">
-                {message.structuredData.nextScene}
+              <Scale
+                className={`w-4 h-4 ${
+                  message.structuredOutput.karmaChange >= 0
+                    ? "text-purple-400 fill-purple-400/20"
+                    : "text-red-400 fill-red-400/20"
+                }`}
+              />
+              <span
+                className={`text-sm font-medium ${
+                  message.structuredOutput.karmaChange >= 0
+                    ? "text-purple-400"
+                    : "text-red-400"
+                }`}
+              >
+                {message.structuredOutput.karmaChange > 0 ? "+" : ""}
+                {message.structuredOutput.karmaChange}
               </span>
             </div>
           </div>
@@ -260,18 +396,36 @@ export default function Chat() {
       {/* Barre d'état style HUD jeu vidéo */}
       <div className="bg-gray-900/80 backdrop-blur-sm p-4 border-b border-gray-700 flex justify-between items-center shadow-xl">
         <div className="flex gap-6">
+          <div className="text-white">{gameState.interactionCount}</div>
           <div className="flex items-center gap-2 text-red-400">
             <Heart className="w-5 h-5 fill-red-500/20 stroke-red-500" />
             <span className="font-bold text-lg">{gameState.health}%</span>
           </div>
-          <div className="flex items-center gap-2 text-yellow-400">
-            <Star className="w-5 h-5 fill-yellow-500/20 stroke-yellow-500" />
-            <span className="font-bold text-lg">{gameState.score}</span>
+
+          <div className="flex items-center gap-2 text-blue-400">
+            <Clock className="w-5 h-5 fill-blue-500/20 stroke-blue-500" />
+            <span className="font-bold text-lg">{gameState.time}h</span>
+          </div>
+          <div className="flex items-center gap-2 text-green-400">
+            <Coins className="w-5 h-5 fill-green-500/20 stroke-green-500" />
+            <span className="font-bold text-lg">${gameState.money}</span>
+          </div>
+          <div className="flex items-center gap-2 text-purple-400">
+            <Scale className="w-5 h-5 fill-purple-500/20 stroke-purple-500" />
+            <span className="font-bold text-lg">{gameState.karma}</span>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-blue-400">
-          <MapPin className="w-5 h-5 fill-blue-500/20 stroke-blue-500" />
-          <span className="font-bold text-lg">{gameState.currentScene}</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-pink-400">
+            <CalendarHeart className="w-5 h-5 fill-pink-500/20 stroke-pink-500" />
+            <span className="font-bold text-lg">{gameState.age} ans</span>
+          </div>
+          <div className="flex items-center gap-2 text-orange-400">
+            <Brain className="w-5 h-5 fill-orange-500/20 stroke-orange-500" />
+            <span className="font-bold text-lg">
+              {gameState.psychologicalProfile}
+            </span>
+          </div>
         </div>
       </div>
 
