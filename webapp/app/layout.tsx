@@ -1,27 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Pixelify_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ChatProvider } from "./context/ChatContext";
-import Sidebar from "./components/Sidebar";
-import { auth } from "@/lib/auth"; // path to your Better Auth server instance
-import { headers } from "next/headers";
-import SignUp from "./components/SignUp";
+
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// je veux utiliser la police Pixelify Sans venant de google font
+const pixelifySans = Pixelify_Sans({
+  variable: "--font-pixelify-sans",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "ChronosAI",
-  description: "ChronosAI",
+  title: "LifeAI",
+  description: "LifeAI",
 };
 
 export default async function RootLayout({
@@ -32,10 +25,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={
-          `${geistSans.variable} ${geistMono.variable} antialiased` +
-          "flex flex-row"
-        }
+        className={`${pixelifySans.variable} antialiased` + "flex flex-row"}
       >
         <ChatProvider>
           <TooltipProvider>
