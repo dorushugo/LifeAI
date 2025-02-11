@@ -39,21 +39,27 @@ export default function Home() {
       >
         <h1 className="text-[#F1F1F1] text-[100px] font-regular">Life.AI</h1>
         <motion.div
-          className="relative pb-2 border-t-0 text-2xl text-white  rounded-[20px] shadow-[inset_0_0_0_4px_white]  transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0"
-          initial={{ paddingBottom: "0.5rem" }}
-          whileHover={{
-            paddingBottom: "1.5rem",
-            transition: { type: "spring", stiffness: 300 },
+          onClick={() => setAsStarted(true)}
+          className="cursor-pointer mt-20 relative pb-2 border-t-0 text-2xl text-white rounded-[20px] shadow-[inset_0_0_0_4px_white] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0"
+          variants={{
+            initial: { paddingBottom: "15px" },
+            hover: {
+              scale: 1.05,
+              transition: { type: "spring", stiffness: 300 },
+            },
           }}
+          initial="initial"
+          whileHover="hover"
         >
           <motion.button
-            onClick={() => setAsStarted(true)}
-            className="relative px-16 py-2 text-2xl text-white  rounded-[20px] border-4 border-white transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#191919] before:rounded-[20px]"
-            initial={{ y: 0 }}
-            whileHover={{
-              scale: 1.05,
-              y: -15,
-              transition: { type: "spring", stiffness: 400 },
+            className="relative px-16 py-2 text-2xl text-white rounded-[20px] border-4 border-white transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#191919] before:rounded-[20px]"
+            variants={{
+              initial: { y: 0 },
+              hover: {
+                scale: 1.05,
+                y: -5,
+                transition: { type: "spring", stiffness: 400 },
+              },
             }}
             whileTap={{
               scale: 0.95,
