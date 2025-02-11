@@ -17,6 +17,7 @@ export interface User {
   interactionCount: number;
   psychologicalProfile: string;
   socialSkills: number;
+  QI: number;
 }
 
 export default function Home() {
@@ -32,7 +33,15 @@ export default function Home() {
     interactionCount: 0,
     psychologicalProfile: "",
     socialSkills: 0,
+    QI: Math.floor(Math.random() * (120 - 85 + 1)) + 80,
   });
+
+  const updateQI = (change: number) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      QI: Math.max(70, Math.min(135, (prevUser?.QI || 0) + change)),
+    }));
+  };
 
   if (!asStarted) {
     return (

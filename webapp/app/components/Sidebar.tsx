@@ -45,7 +45,7 @@ export default function Sidebar({ user }: { user: User | null }) {
         </p>
 
         {/* Nouvelle section pour afficher les statistiques */}
-        <div className="p-4 text-white">
+        <div className="text-white">
           <ul className="grid grid-cols-2 gap-4">
             <li className="flex items-center space-x-2">
               <Image src="/Coeur.svg" alt="Health" width={33} height={33} />
@@ -64,6 +64,15 @@ export default function Sidebar({ user }: { user: User | null }) {
               <span className="text-[24px]">{user?.karma}</span>
             </li>
           </ul>
+        </div>
+        {/* Nouvelle section pour afficher le profil psychologique */}
+        <div className="mt-[61px] text-[24px] text-[#F1F1F1] pb-[12px]">
+          <p>Profil psychologique :</p>
+          <p>{user?.psychologicalProfile}</p>
+        </div>
+        <div className="flex items-center space-x-2">
+            <Image src="/Cerveau.svg" alt="QI" width={33} height={33} />
+            <span className="text-[#F1F1F1] text-[24px]">{user?.QI}</span>
         </div>
       </div>
       
