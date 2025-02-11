@@ -256,18 +256,30 @@ export async function POST(req: Request) {
       messages: body.messages,
       temperature: 0.3,
       schema: z.object({
-        healthChange: z.number().min(-10).max(10),
-        moneyChange: z.number().min(-10).max(10),
-        karmaChange: z.number().min(-10).max(10),
-        psychologicalProfile: z.string(),
-        message: z.string(),
+        healthChange: z
+          .number()
+          .min(-10)
+          .max(10)
+          .describe("Le changement de santé"),
+        moneyChange: z
+          .number()
+          .min(-10)
+          .max(10)
+          .describe("Le changement d'argent"),
+        karmaChange: z
+          .number()
+          .min(-10)
+          .max(10)
+          .describe("Le changement de karma"),
+        psychologicalProfile: z.string().describe("Le profil psychologique"),
+        message: z.string().describe("Le message à afficher"),
         question: z.object({
-          text: z.string(),
+          text: z.string().describe("Le texte de la question"),
           options: z
             .array(
               z.object({
-                text: z.string(),
-                effect: z.string(),
+                text: z.string().describe("Le texte de l'option"),
+                effect: z.string().describe("L'effet de l'option"),
               })
             )
             .length(2),
