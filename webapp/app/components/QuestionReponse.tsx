@@ -26,6 +26,12 @@ export default function QuestionReponse({
       </button>
       <button
         className="m-2 p-2 bg-blue-500 text-white rounded"
+        onClick={() => setUser({ ...user, health: user.health - 5 })}
+      >
+        -5 Health
+      </button>
+      <button
+        className="m-2 p-2 bg-blue-500 text-white rounded"
         onClick={() => setUser({ ...user, money: user.money + 5 })}
       >
         +5 Money
