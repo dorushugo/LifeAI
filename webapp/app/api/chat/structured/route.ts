@@ -312,18 +312,42 @@ const generateMoneyPrompt = (user: User): string => {
       `INFORMATION: L'utilisateur est endetté\n` +
       `DIRECTIVES:\n` +
       `- Proposer 1 option à haut risque financier\n` +
-      `- Inclure des pénalités de dette progressives\n`;
+      `- Inclure des pénalités de dette progressives\n` +
+      `EXEMPLE:\n{
+        "text": "Emprunter à un taux usuraire",
+        "moneyChange": 5,
+        "healthChange": -3,
+        "karmaChange": -2,
+        "socialChange": -1,
+        "psychologicalProfileChange": "Désespéré"
+      }`;
   } else if (money > 1000000) {
     prompt +=
       `INFORMATION: L'utilisateur a un capital important\n` +
       `DIRECTIVES:\n` +
       `- Introduire des opportunités d'investissement\n` +
-      `- Ajouter des risques de fraude proportionnels\n`;
+      `- Ajouter des risques de fraude proportionnels\n` +
+      `EXEMPLE:\n{
+        "text": "Investir dans un projet douteux",
+        "moneyChange": 7,
+        "healthChange": -4,
+        "karmaChange": -3,
+        "socialChange": 1,
+        "psychologicalProfileChange": "Avaricieux"
+      }`;
   } else {
     prompt +=
       `INFORMATION: Situation financière stable\n` +
       `DIRECTIVES:\n` +
-      `- Maintenir des options équilibrées\n`;
+      `- Maintenir des options équilibrées\n` +
+      `EXEMPLE:\n{
+        "text": "Accepter un CDI stable",
+        "moneyChange": 2,
+        "healthChange": -1,
+        "karmaChange": 1,
+        "socialChange": 0,
+        "psychologicalProfileChange": "Stable"
+      }`;
   }
 
   return prompt;
@@ -337,17 +361,41 @@ const generateHealthPrompt = (user: User): string => {
     prompt +=
       `INFORMATION: Santé critique\n` +
       `DIRECTIVES:\n` +
-      `- Introduire des choix impactant la survie\n`;
+      `- Introduire des choix impactant la survie\n` +
+      `EXEMPLE:\n{
+        "text": "Subir une opération risquée",
+        "healthChange": 5,
+        "moneyChange": -4,
+        "karmaChange": 2,
+        "socialChange": -3,
+        "psychologicalProfileChange": "Courageux"
+      }`;
   } else if (health > 80) {
     prompt +=
       `INFORMATION: Excellente condition physique\n` +
       `DIRECTIVES:\n` +
-      `- Proposer des défis sportifs extrêmes\n`;
+      `- Proposer des défis sportifs extrêmes\n` +
+      `EXEMPLE:\n{
+        "text": "Traverser l'Amazonie à pied",
+        "healthChange": -4,
+        "moneyChange": -2,
+        "karmaChange": 3,
+        "socialChange": 1,
+        "psychologicalProfileChange": "Aventurier"
+      }`;
   } else {
     prompt +=
       `INFORMATION: Santé moyenne\n` +
       `DIRECTIVES:\n` +
-      `- Lier santé mentale et physique\n`;
+      `- Lier santé mentale et physique\n` +
+      `EXEMPLE:\n{
+        "text": "Faire un burn-out",
+        "healthChange": -3,
+        "moneyChange": 4,
+        "karmaChange": -1,
+        "socialChange": -2,
+        "psychologicalProfileChange": "Épuisé"
+      }`;
   }
 
   return prompt;
@@ -362,22 +410,54 @@ const generateAgePrompt = (user: User): string => {
       `DIRECTIVES:\n` +
       `- Limiter les conséquences, se concentrer sur des questions et des mises en situation qui permettent de créer un profil psychologique\n` +
       `- Faire des options simples et directes\n` +
-      `- Faire des options qui ne changent pas grand chose à la vie du joueur et qui correspondent à son âge\n`;
+      `- Faire des options qui ne changent pas grand chose à la vie du joueur et qui correspondent à son âge\n` +
+      `EXEMPLE:\n{
+      "text": "Choix alimentaires",
+      "healthChange": 1,
+      "moneyChange": 0,
+      "karmaChange": 0,
+      "socialChange": 0,
+      "psychologicalProfileChange": "Curieux"
+    }`;
   } else if (age < 18) {
     prompt +=
       `INFORMATION: Le joueur est au stade de l'age adulte\n` +
       `DIRECTIVES:\n` +
-      `- Limiter les conséquences permanentes\n`;
+      `- Limiter les conséquences permanentes\n` +
+      `EXEMPLE:\n{
+        "text": "Choix d'orientation scolaire",
+        "healthChange": 0,
+        "moneyChange": -1,
+        "karmaChange": 1,
+        "socialChange": 2,
+        "psychologicalProfileChange": "Curieux"
+      }`;
   } else if (age > 60) {
     prompt +=
       `INFORMATION SUR L'ÂGE DU JOUEUR: Fin de carrière\n` +
       `DIRECTIVES:\n` +
-      `- Introduire des enjeux de transmission\n`;
+      `- Introduire des enjeux de transmission\n` +
+      `EXEMPLE:\n{
+        "text": "Legs testamentaire",
+        "moneyChange": -10,
+        "karmaChange": 2,
+        "healthChange": 0,
+        "socialChange": 1,
+        "psychologicalProfileChange": "Généreux"
+      }`;
   } else {
     prompt +=
       `INFORMATION SUR L'ÂGE DU JOUEUR: Âge actif\n` +
       `DIRECTIVES:\n` +
-      `- Augmenter progressivement les enjeux\n`;
+      `- Augmenter progressivement les enjeux\n` +
+      `EXEMPLE:\n{
+        "text": "Crédit immobilier",
+        "moneyChange": 4,
+        "healthChange": -2,
+        "karmaChange": -1,
+        "socialChange": -1,
+        "psychologicalProfileChange": "Responsable"
+      }`;
   }
 
   return prompt;
@@ -392,18 +472,39 @@ const generateSocialPrompt = (user: User): string => {
       `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Compétences sociales faibles\n` +
       `DIRECTIVES:\n` +
       `- Proposer des options isolantes\n` +
-      `- Ajouter des pénalités sociales cachées\n`;
+      `- Ajouter des pénalités sociales cachées\n` +
+      `EXEMPLE:\n{
+        "text": "Refuser une invitation",
+        "socialChange": -3,
+        "healthChange": 1,
+        "karmaChange": 0,
+        "psychologicalProfileChange": "Solitaire"
+      }`;
   } else if (social > 70) {
     prompt +=
       `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Grand réseau social\n` +
       `DIRECTIVES:\n` +
       `- Introduire des opportunités relationnelles\n` +
-      `- Utiliser le capital social comme ressource\n`;
+      `- Utiliser le capital social comme ressource\n` +
+      `EXEMPLE:\n{
+        "text": "Organiser un événement networking",
+        "socialChange": 4,
+        "moneyChange": 2,
+        "healthChange": -2,
+        "psychologicalProfileChange": "Charismatique"
+      }`;
   } else {
     prompt +=
       `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Réseau social moyen\n` +
       `DIRECTIVES:\n` +
-      `- Maintenir un équilibre relations/vie privée\n`;
+      `- Maintenir un équilibre relations/vie privée\n` +
+      `EXEMPLE:\n{
+        "text": "Accepter une sortie occasionnelle",
+        "socialChange": 1,
+        "healthChange": 1,
+        "karmaChange": 0,
+        "psychologicalProfileChange": "Équilibré"
+      }`;
   }
 
   return prompt;
@@ -419,13 +520,24 @@ const generatePsychologyPrompt = (user: User): string => {
     prompt +=
       `INFORMATION SUR LES TRAITS DU JOUEUR: Aucun trait dominant\n` +
       `DIRECTIVES:\n` +
-      `- Définir le profil psychologique\n`;
+      `- Définir le profil psychologique\n` +
+      `- Proposer des options polarisantes\n` +
+      `EXEMPLE:\n{
+        "text": "Première grande décision",
+        "psychologicalProfileChange": "Déterminé"
+      }`;
   } else {
     prompt +=
       `INFORMATION SUR LES TRAITS DU JOUEUR: Traits dominants détectés\n` +
       `DIRECTIVES:\n` +
       `- Renforcer 1 trait existant par option\n` +
-      `- Créer des conflits entre traits\n`;
+      `- Créer des conflits entre traits\n` +
+      `EXEMPLE:\n{
+        "text": "Choix entre ambition et éthique",
+        "psychologicalProfileChange": "${traits[0]}",
+        "karmaChange": -2,
+        "socialChange": 1
+      }`;
   }
 
   return prompt;
@@ -471,6 +583,7 @@ export const buildMasterPrompt = (user: User): string => {
 
     prompt += generateAgePrompt(user);
     prompt += generatePsychologyPrompt(user);
+    prompt += generateSchemaRequirements();
 
     return prompt;
   }
@@ -535,7 +648,7 @@ export async function POST(req: Request) {
     
     Règles de réponse :
 
-    1. Respecte le format de réponse en JSON comme dans cet exemple:
+    1. Respecte le format de réponse STRICTE donnée dans cet exemple:
     {
       "message": "Contexte de la décision",
       "question": {
@@ -567,9 +680,9 @@ export async function POST(req: Request) {
     }
 
     const result = await generateObject({
-      model: ollama("deepseek-r1:14b"),
+      model: ollama("llama3.1"),
       prompt: generatedPrompt,
-      temperature: 0, // Plus créatif
+      temperature: 0.8, // Plus créatif
       schema: mainSchema,
     });
 
