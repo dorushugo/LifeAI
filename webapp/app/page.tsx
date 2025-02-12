@@ -16,7 +16,7 @@ export interface User {
   karma: number;
   time: number;
   interactionCount: number;
-  psychologicalProfile: string;
+  psychologicalProfile: string[];
   socialSkills: number;
   QI: number;
 }
@@ -32,17 +32,29 @@ export default function Home() {
     karma: 0,
     time: 0,
     interactionCount: 0,
-    psychologicalProfile: "",
+    psychologicalProfile: [],
     socialSkills: 0,
     QI: Math.floor(Math.random() * (120 - 85 + 1)) + 80,
   });
 
-  // Update QI
-  const updateQI = (change: number) => {
-    setUser((prevUser) => ({
-      ...prevUser,
-      QI: Math.max(70, Math.min(135, (prevUser?.QI || 0) + change)),
-    }));
+  // Create the clamped setter
+  const setUserClamped: React.Dispatch<React.SetStateAction<User | null>> = (
+    update
+  ) => {
+    setUser((prev) => {
+      const newUser = typeof update === "function" ? update(prev) : update;
+      if (newUser) {
+        return {
+          ...newUser,
+          health: Math.max(0, Math.min(100, newUser.health)),
+          karma: Math.max(0, Math.min(100, newUser.karma)),
+          age: Math.max(0, Math.min(100, newUser.age)),
+          money: Math.max(0, Math.min(10000000000, newUser.money)),
+          socialSkills: Math.max(0, Math.min(100, newUser.socialSkills)),
+        };
+      }
+      return newUser;
+    });
   };
 
   // Start Game
@@ -95,8 +107,8 @@ export default function Home() {
     user?.gender === ""
   ) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-black"> 
-        <GenderChoice user={user} setUser={setUser} />
+      <div className="flex flex-col items-center justify-center h-screen bg-black">
+        <GenderChoice user={user} setUser={setUserClamped} />
       </div>
     );
   }
@@ -104,46 +116,47 @@ export default function Home() {
   // Game Over
   if (user?.health <= 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-[#191919]"
+      <div
+        className="flex flex-col items-center justify-center h-screen bg-[#191919]"
         style={{ backgroundImage: "url('/Background.svg')" }}
       >
         <div className="flex flex-col items-center justify-center">
-        <h1 className="text-white text-[100px] pb-[61px]">Game Over</h1>
-        <Image src="/GameOver.svg" alt="Game Over" width={144} height={144} />
+          <h1 className="text-white text-[100px] pb-[61px]">Game Over</h1>
+          <Image src="/GameOver.svg" alt="Game Over" width={144} height={144} />
 
-        <motion.div
-          onClick={() => window.location.href = "/"}
-          className="cursor-pointer mt-20 relative pb-2 border-t-0 text-2xl text-white rounded-[20px] shadow-[inset_0_0_0_4px_white] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0"
-          variants={{
-            initial: { paddingBottom: "15px" },
-            hover: {
-              scale: 1.05,
-              transition: { type: "spring", stiffness: 300 },
-            },
-          }}
-          initial="initial"
-          whileHover="hover"
-        >
-          <motion.button
-            className="relative px-16 py-2 text-2xl text-white rounded-[20px] border-4 border-white transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#191919] before:rounded-[20px]"
+          <motion.div
+            onClick={() => (window.location.href = "/")}
+            className="cursor-pointer mt-20 relative pb-2 border-t-0 text-2xl text-white rounded-[20px] shadow-[inset_0_0_0_4px_white] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0"
             variants={{
-              initial: { y: 0 },
+              initial: { paddingBottom: "15px" },
               hover: {
                 scale: 1.05,
-                y: -5,
-                transition: { type: "spring", stiffness: 400 },
+                transition: { type: "spring", stiffness: 300 },
               },
             }}
-            whileTap={{
-              scale: 0.95,
-              y: 0,
-              transition: { type: "spring", stiffness: 400 },
-            }}
+            initial="initial"
+            whileHover="hover"
           >
-            Recommencer
-          </motion.button>
-        </motion.div>
-      </div>  
+            <motion.button
+              className="relative px-16 py-2 text-2xl text-white rounded-[20px] border-4 border-white transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#191919] before:rounded-[20px]"
+              variants={{
+                initial: { y: 0 },
+                hover: {
+                  scale: 1.05,
+                  y: -5,
+                  transition: { type: "spring", stiffness: 400 },
+                },
+              }}
+              whileTap={{
+                scale: 0.95,
+                y: 0,
+                transition: { type: "spring", stiffness: 400 },
+              }}
+            >
+              Recommencer
+            </motion.button>
+          </motion.div>
+        </div>
       </div>
     );
   }
@@ -154,9 +167,14 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center h-screen bg-[#F1F1F1]">
         <div className="flex flex-col items-center justify-center">
           <h1 className="text-[#191919] text-[100px] pb-[61px] font-regular text-center max-w-[70%]">
-            Bien joué, t'as réussis le jeu de la vie ! Mais...
+            Bien joué, t&apos;as réussis le jeu de la vie ! Mais...
           </h1>
-          <Image src="/Victory.svg" alt="Victoire" width={300} height={186.49} />
+          <Image
+            src="/Victory.svg"
+            alt="Victoire"
+            width={300}
+            height={186.49}
+          />
 
           <motion.div
             onClick={() => (window.location.href = "Error.html")}
@@ -199,7 +217,7 @@ export default function Home() {
     <div className="flex h-screen">
       <Sidebar user={user} className="flex-shrink-0" />
       <div className="flex-1 overflow-auto">
-        <QuestionReponse user={user} setUser={setUser} />
+        <QuestionReponse user={user} setUser={setUserClamped} />
       </div>
     </div>
   );
