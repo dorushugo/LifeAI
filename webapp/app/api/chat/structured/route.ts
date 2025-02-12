@@ -204,13 +204,13 @@ const getCurrentTheme = (age: number, interactionIndex: number) => {
 };
 
 export async function POST(req: Request) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
 
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+  // if (!session?.user?.id) {
+  //   return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  // }
 
   try {
     const body = await req.json();
@@ -218,7 +218,7 @@ export async function POST(req: Request) {
     console.log("Requête reçue - Corps:", JSON.stringify(body, null, 2));
 
     const result = await generateObject({
-      model: ollama("mistral"),
+      model: ollama("llama3.1"),
       system: `Salut, tu es un assistant dans le jeu de la vie. 
       
       Thème OBLIGATOIRE : ${getCurrentTheme(
@@ -254,7 +254,7 @@ export async function POST(req: Request) {
       )}" :
       ${getAgePhase(body.gameState.age)?.example}`,
       messages: body.messages,
-      temperature: 0.3,
+      temperature: 0.8,
       schema: z.object({
         healthChange: z
           .number()
