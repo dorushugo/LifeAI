@@ -81,6 +81,11 @@ export default function Chat() {
     QI: 0,
     socialSkills: 0,
   });
+  type ChatProps = {
+    chatIdFromProps: string;
+    initialMessages: ExtendedMessage[];
+    isMessagesLoading: boolean;
+  };
 
   console.log("État initial du jeu:", JSON.stringify(gameState, null, 2));
 
@@ -168,6 +173,8 @@ export default function Chat() {
                 karmaChange: data.structuredOutput.karmaChange,
                 psychologicalProfile:
                   data.structuredOutput.psychologicalProfile,
+                QIChange: data.structuredOutput.QIChange,
+                socialSkillsChange: data.structuredOutput.socialSkillsChange,
                 question: data.structuredOutput.question,
               },
             };
