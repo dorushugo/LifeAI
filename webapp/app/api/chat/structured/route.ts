@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { createOllama } from "ollama-ai-provider";
+import { User } from "@/app/page";
 
 const ollama = createOllama({
   baseURL: "http://localhost:11434/api",
@@ -20,16 +21,26 @@ const getAgePhase = (age: number) => {
     - Conséquences temporaires uniquement
     Exemple : Choix alimentaires, activités ludiques`,
       example: `{
-        "healthChange": 1,
-        "moneyChange": 0,
-        "karmaChange": 0,
-        "psychologicalProfile": "Éveillé",
         "message": "Tes parents te proposent une activité...",
         "question": {
           "text": "Que préfères-tu faire ?",
           "options": [
-            {"text": "Dessiner avec maman", "effect": "+1 créativité"},
-            {"text": "Jouer au ballon", "effect": "+1 coordination"}
+            {
+              "text": "Dessiner avec maman",
+              "healthChange": 1,
+              "moneyChange": 0,
+              "karmaChange": 0,
+              "socialChange": 2,
+              "psychologicalProfileChange": "Créatif"
+            },
+            {
+              "text": "Jouer au ballon",
+              "healthChange": 2,
+              "moneyChange": 0,
+              "karmaChange": 1,
+              "socialChange": 1,
+              "psychologicalProfileChange": "Sportif"
+            }
           ]
         }
       }`,
@@ -37,25 +48,35 @@ const getAgePhase = (age: number) => {
 
   if (age >= 6 && age < 10)
     return {
-      instructions: `Phase Enfance (6-10 ans) :
-    - Premières interactions sociales
-    - Découverte scolaire basique
-    - Conséquences limitées à 3 ans
-    Exemple : Amitiés, choix de loisirs`,
+      instructions: `Phase Nourrisson (0-5 ans) :
+        - Décisions familiales simples
+        - Apprentissage des bases (marche, langage)
+        - Conséquences temporaires uniquement
+        Exemple : Choix alimentaires, activités ludiques`,
       example: `{
-        "healthChange": 0,
-        "moneyChange": 0,
-        "karmaChange": 1,
-        "psychologicalProfile": "Sociable",
-        "message": "Un nouveau copain te propose...",
-        "question": {
-          "text": "Comment réagis-tu ?",
-          "options": [
-            {"text": "Accepter son invitation", "effect": "+2 social"},
-            {"text": "Rester lire seul", "effect": "+1 connaissances"}
-          ]
-        }
-      }`,
+            "message": "Un camarade de classe t'invite à son anniversaire...",
+            "question": {
+              "text": "Comment réagis-tu ?",
+              "options": [
+                {
+                  "text": "Accepter avec enthousiasme",
+                  "healthChange": -1,
+                  "moneyChange": -2,
+                  "karmaChange": 2,
+                  "socialChange": 3,
+                  "psychologicalProfileChange": "Sociable"
+                },
+                {
+                  "text": "Préférer rester à la maison",
+                  "healthChange": 1,
+                  "moneyChange": 0,
+                  "karmaChange": -1,
+                  "socialChange": -2,
+                  "psychologicalProfileChange": "Solitaire"
+                }
+              ]
+            }
+          }`,
     };
 
   if (age >= 10 && age < 15)
@@ -66,16 +87,26 @@ const getAgePhase = (age: number) => {
     - Conséquences sur 5 ans max
     Exemple : Orientation scolaire, premiers conflits`,
       example: `{
-      "healthChange": -1,
-      "moneyChange": 2,
-      "karmaChange": -1,
-      "psychologicalProfile": "Indépendant",
-      "message": "Tu veux gérer ton argent de poche...",
+      "message": "Tu dois choisir une activité extrascolaire...",
       "question": {
-        "text": "Que choisis-tu ?",
+        "text": "Quelle option choisis-tu ?",
         "options": [
-          {"text": "Économiser", "effect": "+3 argent dans 1 an"},
-          {"text": "Acheter un jeu", "effect": "+1 bonheur immédiat"}
+          {
+            "text": "Club de sciences",
+            "healthChange": 0,
+            "moneyChange": -1,
+            "karmaChange": 1,
+            "socialChange": 1,
+            "psychologicalProfileChange": "Intellectuel"
+          },
+          {
+            "text": "Équipe sportive",
+            "healthChange": 2,
+            "moneyChange": -2,
+            "karmaChange": 0,
+            "socialChange": 2,
+            "psychologicalProfileChange": "Compétitif"
+          }
         ]
       }
     }`,
@@ -88,16 +119,26 @@ const getAgePhase = (age: number) => {
     - Questions sur les études et relations sociales
     - Permet des erreurs avec possibilité de rattrapage`,
       example: `{
-      "healthChange": -2,
-      "moneyChange": 0,
-      "karmaChange": -1,
-      "psychologicalProfile": "Rebelle",
-      "message": "Tu envisages de quitter l'école...",
+      "message": "Tu dois choisir ton orientation professionnelle...",
       "question": {
-        "text": "Que décides-tu ?",
+        "text": "Quelle voie suits-tu ?",
         "options": [
-          {"text": "Chercher un travail", "effect": "+3 argent, -2 énergie"},
-          {"text": "Continuer les études", "effect": "-2 argent, +3 compétences"}
+          {
+            "text": "Université prestigieuse",
+            "healthChange": -3,
+            "moneyChange": -5,
+            "karmaChange": 2,
+            "socialChange": 1,
+            "psychologicalProfileChange": "Ambitieux"
+          },
+          {
+            "text": "Formation professionnelle",
+            "healthChange": 1,
+            "moneyChange": 2,
+            "karmaChange": -1,
+            "socialChange": 3,
+            "psychologicalProfileChange": "Pragmatique"
+          }
         ]
       }
     }`,
@@ -113,7 +154,7 @@ const getAgePhase = (age: number) => {
       "healthChange": -5,
       "moneyChange": 8,
       "karmaChange": -3,
-      "psychologicalProfile": "Ambitieux",
+      "psychologicalProfile": "Rebelle",
       "message": "Tu hésite à quitter l'école pour te lancer dans une activité...",
       "question": {
         "text": "Que décides-tu ?",
@@ -132,16 +173,26 @@ const getAgePhase = (age: number) => {
     - Dilemmes complexes avec impacts multiples
     - Enjeux familiaux/professionnels équilibrés`,
       example: `{
-      "healthChange": -5,
-      "moneyChange": 8,
-      "karmaChange": -3,
-      "psychologicalProfile": "Ambitieux",
-      "message": "Tu reçois une promotion exigeante...",
+      "message": "Tu reçois une offre de travail à l'étranger...",
       "question": {
         "text": "Acceptes-tu ?",
         "options": [
-          {"text": "Oui, je me donne à fond", "effect": "+5 argent, -3 santé"},
-          {"text": "Non, je privilégie ma famille", "effect": "-2 argent, +4 bonheur"}
+          {
+            "text": "Oui, nouvelle aventure",
+            "healthChange": -2,
+            "moneyChange": 4,
+            "karmaChange": -1,
+            "socialChange": -3,
+            "psychologicalProfileChange": "Aventurier"
+          },
+          {
+            "text": "Non, rester près des miens",
+            "healthChange": 2,
+            "moneyChange": -1,
+            "karmaChange": 2,
+            "socialChange": 2,
+            "psychologicalProfileChange": "Famille"
+          }
         ]
       }
     }`,
@@ -203,6 +254,364 @@ const getCurrentTheme = (age: number, interactionIndex: number) => {
   return AGE_THEMES[phase][interactionIndex % 5];
 };
 
+// Modifier le schema des options :
+const optionSchema = z.object({
+  text: z.string().describe("Texte de l'option"),
+  healthChange: z.number().min(-5).max(5),
+  moneyChange: z.number().min(-5).max(5),
+  karmaChange: z.number().min(-5).max(5),
+  socialChange: z.number().min(-5).max(5),
+  psychologicalProfileChange: z
+    .string()
+    .describe("Mot clé psychologique à ajouter/enlever"),
+});
+
+// Modifier le schema principal :
+const mainSchema = z.object({
+  message: z.string().describe("Message contextuel"),
+  question: z.object({
+    text: z.string().describe("Question principale"),
+    options: z.array(optionSchema).min(2).max(6),
+  }),
+});
+
+// ================= GENERATEURS INDIVIDUELS =================
+
+const generateKarmaPrompt = (user: User): string => {
+  const karma = user.karma;
+  let prompt = `\n\n## INFLUENCE KARMA (${karma}/100)\n`;
+
+  if (karma < -30) {
+    prompt +=
+      `INFORMATION: L'utilisateur à un score de karma négatif, il est donc plus susceptible pour toi de lui proposer des choix illégaux, des pièges ou des options risquées.\n` +
+      `DIRECTIVES:\n` +
+      `- Proposer 1 option illégale mais rentable\n` +
+      `- Rendre les conséquences morales ambiguës\n` +
+      `- Cibler les faiblesses liés à cette liste de traits: ${
+        user.psychologicalProfile.join(", ") || "Aucune"
+      }\n`;
+  } else if (karma > 60) {
+    prompt +=
+      `INFORMATION: L'utilisateur à un score de karma positif, il est donc plus susceptible pour toi de lui proposer des choix légaux, des options éthiques ou des options qui lui permettent de gagner du karma.\n` +
+      `DIRECTIVES:\n` +
+      `- Inclure 1 option altruiste avec coût personnel\n` +
+      `- Créer un dilemme éthique complexe\n`;
+  } else {
+    prompt += `INFORMATION: L'utilisateur à un score de karma neutre, il est donc plus susceptible pour toi de lui proposer des choix légaux et illégaux, des options éthiques ou pas éthiques, des options qui lui permettent de gagner du karma ou des options qui lui permettent de perdre du karma afin de rendre le jeu plus intéressant et faire évoluer son karma dans les deux sens.\n`;
+  }
+
+  return prompt;
+};
+
+const generateMoneyPrompt = (user: User): string => {
+  const money = user.money;
+  let prompt = `\n\n## INFLUENCE ARGENT (${money}€)\n`;
+
+  if (money < 0) {
+    prompt +=
+      `INFORMATION: L'utilisateur est endetté\n` +
+      `DIRECTIVES:\n` +
+      `- Proposer 1 option à haut risque financier\n` +
+      `- Inclure des pénalités de dette progressives\n` +
+      `EXEMPLE:\n{
+        "text": "Emprunter à un taux usuraire",
+        "moneyChange": 5,
+        "healthChange": -3,
+        "karmaChange": -2,
+        "socialChange": -1,
+        "psychologicalProfileChange": "Désespéré"
+      }`;
+  } else if (money > 1000000) {
+    prompt +=
+      `INFORMATION: L'utilisateur a un capital important\n` +
+      `DIRECTIVES:\n` +
+      `- Introduire des opportunités d'investissement\n` +
+      `- Ajouter des risques de fraude proportionnels\n` +
+      `EXEMPLE:\n{
+        "text": "Investir dans un projet douteux",
+        "moneyChange": 7,
+        "healthChange": -4,
+        "karmaChange": -3,
+        "socialChange": 1,
+        "psychologicalProfileChange": "Avaricieux"
+      }`;
+  } else {
+    prompt +=
+      `INFORMATION: Situation financière stable\n` +
+      `DIRECTIVES:\n` +
+      `- Maintenir des options équilibrées\n` +
+      `EXEMPLE:\n{
+        "text": "Accepter un CDI stable",
+        "moneyChange": 2,
+        "healthChange": -1,
+        "karmaChange": 1,
+        "socialChange": 0,
+        "psychologicalProfileChange": "Stable"
+      }`;
+  }
+
+  return prompt;
+};
+
+const generateHealthPrompt = (user: User): string => {
+  const health = user.health;
+  let prompt = `\n\n## INFLUENCE SANTÉ (${health}/100)\n`;
+
+  if (health < 30) {
+    prompt +=
+      `INFORMATION: Santé critique\n` +
+      `DIRECTIVES:\n` +
+      `- Introduire des choix impactant la survie\n` +
+      `EXEMPLE:\n{
+        "text": "Subir une opération risquée",
+        "healthChange": 5,
+        "moneyChange": -4,
+        "karmaChange": 2,
+        "socialChange": -3,
+        "psychologicalProfileChange": "Courageux"
+      }`;
+  } else if (health > 80) {
+    prompt +=
+      `INFORMATION: Excellente condition physique\n` +
+      `DIRECTIVES:\n` +
+      `- Proposer des défis sportifs extrêmes\n` +
+      `EXEMPLE:\n{
+        "text": "Traverser l'Amazonie à pied",
+        "healthChange": -4,
+        "moneyChange": -2,
+        "karmaChange": 3,
+        "socialChange": 1,
+        "psychologicalProfileChange": "Aventurier"
+      }`;
+  } else {
+    prompt +=
+      `INFORMATION: Santé moyenne\n` +
+      `DIRECTIVES:\n` +
+      `- Lier santé mentale et physique\n` +
+      `EXEMPLE:\n{
+        "text": "Faire un burn-out",
+        "healthChange": -3,
+        "moneyChange": 4,
+        "karmaChange": -1,
+        "socialChange": -2,
+        "psychologicalProfileChange": "Épuisé"
+      }`;
+  }
+
+  return prompt;
+};
+
+const generateAgePrompt = (user: User): string => {
+  const age = user.age;
+  let prompt = `\n\n## Le joueur a ${age} ans\n`;
+  if (age < 5) {
+    prompt +=
+      `INFORMATION: Le joueur est au stade du nourrisson\n` +
+      `DIRECTIVES:\n` +
+      `- Limiter les conséquences, se concentrer sur des questions et des mises en situation qui permettent de créer un profil psychologique\n` +
+      `- Faire des options simples et directes\n` +
+      `- Faire des options qui ne changent pas grand chose à la vie du joueur et qui correspondent à son âge\n` +
+      `EXEMPLE:\n{
+      "text": "Choix alimentaires",
+      "healthChange": 1,
+      "moneyChange": 0,
+      "karmaChange": 0,
+      "socialChange": 0,
+      "psychologicalProfileChange": "Curieux"
+    }`;
+  } else if (age < 18) {
+    prompt +=
+      `INFORMATION: Le joueur est au stade de l'age adulte\n` +
+      `DIRECTIVES:\n` +
+      `- Limiter les conséquences permanentes\n` +
+      `EXEMPLE:\n{
+        "text": "Choix d'orientation scolaire",
+        "healthChange": 0,
+        "moneyChange": -1,
+        "karmaChange": 1,
+        "socialChange": 2,
+        "psychologicalProfileChange": "Curieux"
+      }`;
+  } else if (age > 60) {
+    prompt +=
+      `INFORMATION SUR L'ÂGE DU JOUEUR: Fin de carrière\n` +
+      `DIRECTIVES:\n` +
+      `- Introduire des enjeux de transmission\n` +
+      `EXEMPLE:\n{
+        "text": "Legs testamentaire",
+        "moneyChange": -10,
+        "karmaChange": 2,
+        "healthChange": 0,
+        "socialChange": 1,
+        "psychologicalProfileChange": "Généreux"
+      }`;
+  } else {
+    prompt +=
+      `INFORMATION SUR L'ÂGE DU JOUEUR: Âge actif\n` +
+      `DIRECTIVES:\n` +
+      `- Augmenter progressivement les enjeux\n` +
+      `EXEMPLE:\n{
+        "text": "Crédit immobilier",
+        "moneyChange": 4,
+        "healthChange": -2,
+        "karmaChange": -1,
+        "socialChange": -1,
+        "psychologicalProfileChange": "Responsable"
+      }`;
+  }
+
+  return prompt;
+};
+
+const generateSocialPrompt = (user: User): string => {
+  const social = user.socialSkills;
+  let prompt = `\n\n## INFLUENCE SOCIALE (${social}/100)\n`;
+
+  if (social < 30) {
+    prompt +=
+      `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Compétences sociales faibles\n` +
+      `DIRECTIVES:\n` +
+      `- Proposer des options isolantes\n` +
+      `- Ajouter des pénalités sociales cachées\n` +
+      `EXEMPLE:\n{
+        "text": "Refuser une invitation",
+        "socialChange": -3,
+        "healthChange": 1,
+        "karmaChange": 0,
+        "psychologicalProfileChange": "Solitaire"
+      }`;
+  } else if (social > 70) {
+    prompt +=
+      `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Grand réseau social\n` +
+      `DIRECTIVES:\n` +
+      `- Introduire des opportunités relationnelles\n` +
+      `- Utiliser le capital social comme ressource\n` +
+      `EXEMPLE:\n{
+        "text": "Organiser un événement networking",
+        "socialChange": 4,
+        "moneyChange": 2,
+        "healthChange": -2,
+        "psychologicalProfileChange": "Charismatique"
+      }`;
+  } else {
+    prompt +=
+      `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Réseau social moyen\n` +
+      `DIRECTIVES:\n` +
+      `- Maintenir un équilibre relations/vie privée\n` +
+      `EXEMPLE:\n{
+        "text": "Accepter une sortie occasionnelle",
+        "socialChange": 1,
+        "healthChange": 1,
+        "karmaChange": 0,
+        "psychologicalProfileChange": "Équilibré"
+      }`;
+  }
+
+  return prompt;
+};
+
+const generatePsychologyPrompt = (user: User): string => {
+  const traits = user.psychologicalProfile;
+  let prompt = `\n\n## INFLUENCE PSYCHOLOGIE (${
+    traits.join(", ") || "Aucun"
+  })\n`;
+
+  if (traits.length === 0) {
+    prompt +=
+      `INFORMATION SUR LES TRAITS DU JOUEUR: Aucun trait dominant\n` +
+      `DIRECTIVES:\n` +
+      `- Définir le profil psychologique\n` +
+      `- Proposer des options polarisantes\n` +
+      `EXEMPLE:\n{
+        "text": "Première grande décision",
+        "psychologicalProfileChange": "Déterminé"
+      }`;
+  } else {
+    prompt +=
+      `INFORMATION SUR LES TRAITS DU JOUEUR: Traits dominants détectés\n` +
+      `DIRECTIVES:\n` +
+      `- Renforcer 1 trait existant par option\n` +
+      `- Créer des conflits entre traits\n` +
+      `EXEMPLE:\n{
+        "text": "Choix entre ambition et éthique",
+        "psychologicalProfileChange": "${traits[0]}",
+        "karmaChange": -2,
+        "socialChange": 1
+      }`;
+  }
+
+  return prompt;
+};
+
+const generateSchemaRequirements = (): string => {
+  return (
+    `\n\n## RÈGLES DE GÉNÉRATION DE LA RÉPONSE\n` +
+    `1. Les options doivent obéir à ce format :` +
+    `{
+        message: string;
+        question: {
+          text: string;
+          options: {
+            text: string;
+            healthChange: number (-5 à +5);
+            moneyChange: number (-5 à +5);
+            karmaChange: number (-5 à +5);
+            socialChange: number (-5 à +5);
+            psychologicalProfileChange: string;
+          }[];
+        }
+      }`
+  );
+};
+
+// ================= FONCTIONS SIMILAIRES POUR =================
+// generateHealthPrompt(), generateAgePrompt(), generateSocialPrompt(),
+// generatePsychologyPrompt()...
+
+// ================= COMBINAISON FINALE =================
+
+export const buildMasterPrompt = (user: User): string => {
+  let prompt = `ROLE: Tu est un maître de jeu pour un jeu de la vie. Tu accompagne l'utilisateur dans ses décisions tout le long de sa vie, chaque fois qu'on t'utilise tu recois des informations sur les stats de l'utilisateur et tu dois générer des questions adaptées en fonction du profil de l'utilisateur.\n\n`;
+
+  if (user.age < 15) {
+    // Mode enfant : focus sur la personnalité
+    prompt += `## NOUS SOMMES DANS LE MODE ENFANCE, le personnage du joueur à qui tu t'adresse a ${user.age} ans,n`;
+    prompt += `DIRECTIVES SPÉCIALES:\n`;
+    prompt += `- Ignorer toutes les stats sauf l'âge et les traits psychologiques\n`;
+    prompt += `- Générer des options influençant uniquement le profil psychologique\n`;
+    prompt += `- Thèmes: éducation, amitiés, découvertes\n\n`;
+
+    prompt += generateAgePrompt(user);
+    prompt += generatePsychologyPrompt(user);
+
+    return prompt;
+  }
+
+  // Mode normal pour 15+ ans
+  prompt += generateKarmaPrompt(user);
+  prompt += generateMoneyPrompt(user);
+  prompt += generateHealthPrompt(user);
+  prompt += generateAgePrompt(user);
+  prompt += generateSocialPrompt(user);
+  prompt += generatePsychologyPrompt(user);
+
+  // Règles croisées
+  prompt += `\n\n## INTERACTIONS COMPLEXES\n`;
+  prompt +=
+    `1. COMBINAISON ÂGE/KARMA:\n` +
+    `- Si âge > 50 & karma < 0: Proposer des options de rédemption\n` +
+    `- Si âge < 30 & karma > 50: Introduire des tentations\n`;
+
+  prompt +=
+    `2. SANTÉ/ARGENT:\n` +
+    `- Santé < 30 & Argent < 0: Options extrêmes (organes, crimes)\n` +
+    `- Santé > 80 & Argent > 1M: Risques calculés (sports dangereux)\n`;
+
+  // Exemple contextuel
+
+  return prompt;
+};
+
 export async function POST(req: Request) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -214,97 +623,101 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    console.log("messages", body.messages);
-    console.log("Requête reçue - Corps:", JSON.stringify(body, null, 2));
+    const gameState = body.gameState;
 
-    const result = await generateObject({
-      model: ollama("mistral"),
-      system: `Salut, tu es un assistant dans le jeu de la vie. 
-      
-      Thème OBLIGATOIRE : ${getCurrentTheme(
-        body.gameState.age,
-        body.gameState.interactionCount
-      )}
-      Interaction : ${(body.gameState.interactionCount % 5) + 1}/5
-      
-      Règles ABSOLUTES :
-      1. Structure de réponse STRICTE :
-      {
-        "healthChange": number (-10 à 10),
-        "moneyChange": number (-10 à 10),
-        "karmaChange": number (-10 à 10),
-        "psychologicalProfile": string,
-        "message": string,
-        "question": {
-          "text": string,
-          "options": EXACTEMENT 2 CHOIX [
-            {"text": string, "effect": string},
-            {"text": string, "effect": string}
-          ]
+    // Création de l'objet user basé sur le schéma
+    const user: User = {
+      age: gameState.age,
+      health: gameState.health,
+      money: gameState.money,
+      karma: gameState.karma,
+      socialSkills: gameState.social,
+      psychologicalProfile: gameState.traits || [],
+      gender: gameState.gender,
+      name: gameState.name,
+      time: gameState.time,
+      interactionCount: gameState.interactionCount,
+      pendingChanges: gameState.pendingChanges,
+      QI: gameState.QI,
+    };
+
+    const generatedPrompt =
+      buildMasterPrompt(user) +
+      `
+    
+    Règles de réponse :
+
+    1. Respecte le format de réponse en JSON comme dans cet exemple:
+    {
+      "message": "Contexte de la décision",
+      "question": {
+        "text": "Question principale",
+        "options": {
+          "text": "Option 1",
+          "healthChange": 0,
+          "moneyChange": 2,
+          "karmaChange": -2,
+          "socialChange": 0,
+          "psychologicalProfileChange": "Trait 1"
+        },
+        {
+          "text": "Option 2",
+          "healthChange": 0,
+          "moneyChange": 0,
+          "karmaChange": 0,
+          "socialChange": 0,
+          "psychologicalProfileChange": "Trait 2"
         }
       }
-      
-      2. Ne JAMAIS dévier de cette structure
-      3. Les valeurs numériques DOIVENT être des nombres
-      4. EXACTEMENT 2 options sans exception
-      
-      Exemple pour le thème "${getCurrentTheme(
-        body.gameState.age,
-        body.gameState.interactionCount
-      )}" :
-      ${getAgePhase(body.gameState.age)?.example}`,
-      messages: body.messages,
-      temperature: 0.3,
-      schema: z.object({
-        healthChange: z
-          .number()
-          .min(-10)
-          .max(10)
-          .describe("Le changement de santé"),
-        moneyChange: z
-          .number()
-          .min(-10)
-          .max(10)
-          .describe("Le changement d'argent"),
-        karmaChange: z
-          .number()
-          .min(-10)
-          .max(10)
-          .describe("Le changement de karma"),
-        psychologicalProfile: z.string().describe("Le profil psychologique"),
-        message: z.string().describe("Le message à afficher"),
-        question: z.object({
-          text: z.string().describe("Le texte de la question"),
-          options: z
-            .array(
-              z.object({
-                text: z.string().describe("Le texte de l'option"),
-                effect: z.string().describe("L'effet de l'option"),
-              })
-            )
-            .length(2),
-        }),
-      }),
+    }`;
+
+    // Log complet en dev seulement
+    if (process.env.NODE_ENV === "development") {
+      console.log("\n======= PROMPT COMPLET =======\n");
+      console.log(generatedPrompt);
+      console.log("\n==============================\n");
+    }
+
+    const result = await generateObject({
+      model: ollama("deepseek-r1:32b"),
+      prompt: generatedPrompt,
+      temperature: 0, // Plus créatif
+      schema: mainSchema,
     });
 
+    // Log de la réponse
+    console.log("\n======= RÉPONSE IA =======");
+    console.log("Données:", JSON.stringify(result.object, null, 2));
+    console.log("=========================\n");
+
+    // Post-traitement des résultats
     const structuredOutput = result.object;
-    console.log("Résultat structuré:", structuredOutput);
+    structuredOutput.question.options = structuredOutput.question.options
+      .slice(0, 2) // Garder seulement 2 options
+      .map((option) => ({
+        ...option,
+        // Normalisation des valeurs
+        healthChange: clamp(option.healthChange, -5, 5),
+        moneyChange: clamp(option.moneyChange, -5, 5),
+        karmaChange: clamp(option.karmaChange, -5, 5),
+        socialChange: clamp(option.socialChange, -5, 5),
+      }));
 
-    return NextResponse.json({
-      text: structuredOutput.message,
-      structuredOutput: {
-        healthChange: structuredOutput.healthChange,
-        moneyChange: structuredOutput.moneyChange,
-        karmaChange: structuredOutput.karmaChange,
-        psychologicalProfile: structuredOutput.psychologicalProfile,
-        question: structuredOutput.question,
-      },
-    });
+    return NextResponse.json({ structuredOutput });
   } catch (error) {
-    console.error("Erreur complète:", error);
+    console.error("\n======= ERREUR =======");
+    console.error("Message:", error instanceof Error ? error.message : error);
+    console.error("Stack:", error instanceof Error ? error.stack : "N/A");
+    console.error("Requête:", req.headers);
+    console.error("========================\n");
+
     return NextResponse.json(
-      { error: "Échec de la génération: " + (error as Error).message },
+      { error: "Erreur interne du serveur" },
       { status: 500 }
     );
   }
 }
+
+// Helper pour limiter les valeurs
+const clamp = (value: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, value || 0));
