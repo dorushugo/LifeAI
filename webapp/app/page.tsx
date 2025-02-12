@@ -19,6 +19,12 @@ export interface User {
   psychologicalProfile: string[];
   socialSkills: number;
   QI: number;
+  pendingChanges: {
+    health: number;
+    money: number;
+    karma: number;
+    psychologicalProfileChanges: string[];
+  };
 }
 
 export default function Home() {
@@ -35,6 +41,12 @@ export default function Home() {
     psychologicalProfile: [],
     socialSkills: 0,
     QI: Math.floor(Math.random() * (120 - 85 + 1)) + 80,
+    pendingChanges: {
+      health: 0,
+      money: 0,
+      karma: 0,
+      psychologicalProfileChanges: [],
+    },
   });
 
   // Create the clamped setter
@@ -47,7 +59,7 @@ export default function Home() {
         return {
           ...newUser,
           health: Math.max(0, Math.min(100, newUser.health)),
-          karma: Math.max(0, Math.min(100, newUser.karma)),
+          karma: Math.max(-100, Math.min(100, newUser.karma)),
           age: Math.max(0, Math.min(100, newUser.age)),
           money: Math.max(0, Math.min(10000000000, newUser.money)),
           socialSkills: Math.max(0, Math.min(100, newUser.socialSkills)),

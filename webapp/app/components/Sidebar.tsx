@@ -32,7 +32,8 @@ export default function Sidebar({ user }: { user: User | null }) {
 
       <div className="text-center">
         <h1 className="text-[50px] text-[#F1F1F1]">
-          {user?.gender === "male" ? "Roberto" : "Roberta"}
+          {user?.gender === "male" ? "Roberto" : "Roberta"}{" "}
+          {user?.interactionCount}
         </h1>
 
         <p className="text-[40px] text-[#F1F1F1] -mt-[15px]">{user?.age} ans</p>
