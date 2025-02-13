@@ -132,17 +132,34 @@ export default function QuestionReponse({
     setUser(newUser);
   };
 
-  const handleRatingClick = async (rating: number) => {
-    setCurrentRating(rating);
+  const submitRating = async () => {
+    if (!currentRating) return; // Ne rien faire si aucune étoile n'est sélectionnée
     try {
-      // À compléter plus tard avec l'appel API
-      console.log("Envoi de la notation:", {
-        rating,
-        question: currentQuestion?.structuredOutput.question.text,
+      const ratingData = {
+        rating: currentRating,
         message: currentQuestion?.structuredOutput.message,
+        context: currentQuestion?.structuredOutput.question.text,
+        responses: currentQuestion?.structuredOutput.question.options,
+        date: new Date().toISOString(),
+      };
+
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ratingData),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erreur lors de l'envoi de la notation: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("Notation envoyée avec succès :", result);
+      setCurrentRating(0);
     } catch (error) {
-      console.error("Erreur lors de l'envoi de la notation:", error);
+      console.error("Erreur lors de l'envoi de la notation :", error);
+      // Ici, vous pouvez aussi mettre à jour l'IU pour informer l'utilisateur de l'erreur
     }
   };
 
@@ -280,7 +297,7 @@ export default function QuestionReponse({
                     }}
                     initial="initial"
                     whileHover="hover"
-                    onClick={() => handleRatingClick(rating)}
+                    onClick={() => setCurrentRating(rating)}
                   >
                     <motion.button
                       className={`relative w-full h-full flex items-center justify-center text-3xl rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] ${
@@ -307,6 +324,13 @@ export default function QuestionReponse({
                   </motion.div>
                 ))}
               </div>
+              <button
+                disabled={!currentRating}
+                onClick={submitRating}
+                className="mt-4 p-2 bg-green-500 text-white rounded disabled:opacity-50"
+              >
+                Valider la notation
+              </button>
             </div>
 
             <h2 className="text-5xl font-regular text-center leading-tight">
