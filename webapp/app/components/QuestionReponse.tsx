@@ -107,7 +107,7 @@ const GAMEPLAY_TIPS = [
   "Chaque interaction vieillit votre personnage d'un an - planifiez à long terme !",
   "Les souvenirs accumulés débloquent des situations spéciales plus tard",
   "Les changements de karma influencent les réactions des personnages secondaires",
-  "Alterner entre différents traits psychologiques pour plus de flexibilité",
+  "Jouez avec les entre différents traits psychologiques pour plus de flexibilité",
   "Votre âge détermine les types de défis auxquels vous faites face",
   "Consultez régulièrement votre journal des souvenirs pour suivre votre progression",
   "Les événements aléatoires testent votre capacité d'adaptation",
@@ -198,10 +198,10 @@ export default function QuestionReponse({
       socialSkills: user.socialSkills + option.socialChange,
       psychologicalProfile: [
         ...user.psychologicalProfile.filter(
-          (word) => word !== option.psychologicalProfileChange
+          (t) => t !== option.psychologicalProfileChange
         ),
         option.psychologicalProfileChange,
-      ].slice(0, 6),
+      ].slice(-6),
       memory: [
         ...user.memory,
         ...(option.memoryChange
@@ -212,7 +212,7 @@ export default function QuestionReponse({
                 " ans",
             ]
           : []),
-      ].slice(-20),
+      ].slice(-10),
       interactionCount: user.interactionCount + 1,
     };
 
@@ -255,8 +255,8 @@ export default function QuestionReponse({
 
   return (
     <div className="flex flex-col items-center justify-between h-screen text-black bg-[#F1F1F1]">
-      {/* Section centrale - Contenu dynamique */}
-      <div className="flex-1 w-full flex flex-col items-center justify-center px-20">
+      {/* Section centrale modifiée pour le responsive */}
+      <div className="flex-1 w-full flex flex-col items-center justify-center px-4 md:px-20">
         {currentQuestion ? (
           // Afficher la question si disponible
           <div className="flex flex-col items-center space-y-8">
@@ -472,51 +472,55 @@ export default function QuestionReponse({
         )}
       </div>
 
-      {/* Section inférieure - Réponses (seulement si question disponible) */}
+      {/* Section des options responsive */}
       {currentQuestion && (
-        <div className="w-full flex items-start justify-center px-20 pb-20">
-          <div className="flex flex-row gap-8">
+        <div className="w-full flex items-start justify-center px-4 md:px-20 pb-8 md:pb-20">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 w-full max-w-4xl">
             {currentQuestion.structuredOutput.question.options.map(
               (option, index) => (
                 <motion.div
                   key={index}
-                  className="cursor-pointer relative pb-2 border-t-0 text-2xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-[320px] flex flex-col"
-                  variants={{
-                    initial: { paddingBottom: "15px" },
-                    hover: {
-                      scale: 1.05,
-                      transition: { type: "spring", stiffness: 300 },
-                    },
-                  }}
-                  initial="initial"
-                  whileHover="hover"
-                  onClick={() => handleOptionClick(option)}
+                  className="w-full md:w-[320px] h-full flex justify-center items-center"
                 >
-                  <motion.button
-                    className="relative w-full flex-1 py-2 px-6 text-xl text-black rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#F1F1F1] before:rounded-[20px] break-words flex items-center justify-center"
+                  <motion.div
+                    className="cursor-pointer h-full relative pb-2 border-t-0 text-2xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-[320px] flex flex-col"
                     variants={{
-                      initial: { y: 0 },
+                      initial: { paddingBottom: "15px" },
                       hover: {
                         scale: 1.05,
-                        y: -5,
-                        transition: { type: "spring", stiffness: 400 },
+                        transition: { type: "spring", stiffness: 300 },
                       },
                     }}
-                    whileTap={{
-                      scale: 0.95,
-                      y: 0,
-                      transition: { type: "spring", stiffness: 400 },
-                    }}
+                    initial="initial"
+                    whileHover="hover"
+                    onClick={() => handleOptionClick(option)}
                   >
-                    <span className="text-center px-2 h-full flex flex-col items-center justify-center">
-                      {option.text}
-                      <br />
-                      <span className="text-sm text-gray-600">
-                        (Santé: {option.healthChange}, Argent:{" "}
-                        {option.moneyChange}, Karma: {option.karmaChange})
+                    <motion.button
+                      className="relative w-full h-full flex-1 py-2 px-6 text-xl text-black rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#F1F1F1] before:rounded-[20px] break-words flex items-center justify-center min-h-[150px] md:min-h-[200px]"
+                      variants={{
+                        initial: { y: 0 },
+                        hover: {
+                          scale: 1.05,
+                          y: -5,
+                          transition: { type: "spring", stiffness: 400 },
+                        },
+                      }}
+                      whileTap={{
+                        scale: 0.95,
+                        y: 0,
+                        transition: { type: "spring", stiffness: 400 },
+                      }}
+                    >
+                      <span className="text-center px-2 h-full flex flex-col items-center justify-center">
+                        {option.text}
+                        <br />
+                        <span className="text-sm text-gray-600">
+                          (Santé: {option.healthChange}, Argent:{" "}
+                          {option.moneyChange}, Karma: {option.karmaChange})
+                        </span>
                       </span>
-                    </span>
-                  </motion.button>
+                    </motion.button>
+                  </motion.div>
                 </motion.div>
               )
             )}

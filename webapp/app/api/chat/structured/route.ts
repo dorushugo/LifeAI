@@ -348,45 +348,18 @@ const generateMoneyPrompt = (user: User): string => {
       `INFORMATION: L'utilisateur est endetté\n` +
       `DIRECTIVES:\n` +
       `- Proposer 1 option à haut risque financier\n` +
-      `- Inclure des pénalités de dette progressives\n` +
-      `EXEMPLE:\n{
-        "text": "Emprunter à un taux usuraire",
-        "moneyChange": 5,
-        "healthChange": -3,
-        "karmaChange": -2,
-        "socialChange": -1,
-        "psychologicalProfileChange": "Désespéré",
-        "memoryChange": "Le joueur a emprunté à un taux usuraire et a perdu son travail actuel à l'age de 28 ans"
-      }`;
+      `- Inclure des pénalités de dette progressives\n`;
   } else if (money > 1000000) {
     prompt +=
       `INFORMATION: L'utilisateur a un capital important\n` +
       `DIRECTIVES:\n` +
       `- Introduire des opportunités d'investissement\n` +
-      `- Ajouter des risques de fraude proportionnels\n` +
-      `EXEMPLE:\n{
-        "text": "Investir dans un projet douteux",
-        "moneyChange": 7,
-        "healthChange": -4,
-        "karmaChange": -3,
-        "socialChange": 1,
-        "psychologicalProfileChange": "Avaricieux",
-        "memoryChange": "Le joueur a investi dans un projet douteux et a perdu son travail actuel à l'age de 30 ans"
-      }`;
+      `- Ajouter des risques de fraude proportionnels\n`;
   } else {
     prompt +=
       `INFORMATION: Situation financière stable\n` +
       `DIRECTIVES:\n` +
-      `- Maintenir des options équilibrées\n` +
-      `EXEMPLE:\n{
-        "text": "Accepter un CDI stable",
-        "moneyChange": 2,
-        "healthChange": -1,
-        "karmaChange": 1,
-        "socialChange": 0,
-        "psychologicalProfileChange": "Stable",
-        "memoryChange": "Le joueur a accepté un CDI stable et a continué son travail actuel à l'age de 35 ans"
-      }`;
+      `- Maintenir des options équilibrées\n`;
   }
 
   return prompt;
@@ -400,44 +373,17 @@ const generateHealthPrompt = (user: User): string => {
     prompt +=
       `INFORMATION: Santé critique\n` +
       `DIRECTIVES:\n` +
-      `- Introduire des choix impactant la survie\n` +
-      `EXEMPLE:\n{
-        "text": "Subir une opération risquée",
-        "healthChange": 5,
-        "moneyChange": -4,
-        "karmaChange": 2,
-        "socialChange": -3,
-        "psychologicalProfileChange": "Courageux",
-        "memoryChange": "Le joueur a subi une opération risquée et a perdu son travail actuel à l'age de 32 ans"
-      }`;
+      `- Introduire des choix impactant la survie\n`;
   } else if (health > 80) {
     prompt +=
       `INFORMATION: Excellente condition physique\n` +
       `DIRECTIVES:\n` +
-      `- Proposer des défis sportifs extrêmes\n` +
-      `EXEMPLE:\n{
-        "text": "Traverser l'Amazonie à pied",
-        "healthChange": -4,
-        "moneyChange": -2,
-        "karmaChange": 3,
-        "socialChange": 1,
-        "psychologicalProfileChange": "Aventurier",
-        "memoryChange": "Le joueur a traversé l'Amazonie à pied et a perdu son travail actuel à l'age de 34 ans"
-      }`;
+      `- Proposer des défis sportifs extrêmes\n`;
   } else {
     prompt +=
       `INFORMATION: Santé moyenne\n` +
       `DIRECTIVES:\n` +
-      `- Lier santé mentale et physique\n` +
-      `EXEMPLE:\n{
-        "text": "Faire un burn-out",
-        "healthChange": -3,
-        "moneyChange": 4,
-        "karmaChange": -1,
-        "socialChange": -2,
-        "psychologicalProfileChange": "Épuisé",
-        "memoryChange": "Le joueur a fait un burn-out et a perdu son travail actuel à l'age de 36 ans"
-      }`;
+      `- Lier santé mentale et physique\n`;
   }
 
   return prompt;
@@ -451,59 +397,22 @@ const generateAgePrompt = (user: User): string => {
       `INFORMATION: Le joueur est au stade du nourrisson\n` +
       `DIRECTIVES:\n` +
       `- Limiter les conséquences, se concentrer sur des questions et des mises en situation qui permettent de créer un profil psychologique\n` +
-      `- Faire des options simples et directes\n` +
-      `- Faire des options qui ne changent pas grand chose à la vie du joueur et qui correspondent à son âge\n` +
-      `EXEMPLE:\n{
-      "text": "Choix alimentaires",
-      "healthChange": 1,
-      "moneyChange": 0,
-      "karmaChange": 0,
-      "socialChange": 0,
-      "psychologicalProfileChange": "Curieux",
-      "memoryChange": ""
-    }`;
+      `- Faire des options simples et directes\n`;
   } else if (age < 18) {
     prompt +=
       `INFORMATION: Le joueur est au stade de l'age adulte\n` +
       `DIRECTIVES:\n` +
-      `- Limiter les conséquences permanentes\n` +
-      `EXEMPLE:\n{
-        "text": "Choix d'orientation scolaire",
-        "healthChange": 0,
-        "moneyChange": -1,
-        "karmaChange": 1,
-        "socialChange": 2,
-        "psychologicalProfileChange": "Curieux",
-        "memoryChange": "Le joueur a fait un choix d'orientation et a quitté ses études à l'age de 18 ans"
-      }`;
+      `- Limiter les conséquences permanentes\n`;
   } else if (age > 60) {
     prompt +=
       `INFORMATION SUR L'ÂGE DU JOUEUR: Fin de carrière\n` +
       `DIRECTIVES:\n` +
-      `- Introduire des enjeux de transmission\n` +
-      `EXEMPLE:\n{
-        "text": "Legs testamentaire",
-        "moneyChange": -10,
-        "karmaChange": 2,
-        "healthChange": 0,
-        "socialChange": 1,
-        "psychologicalProfileChange": "Généreux",
-        "memoryChange": "Le joueur a fait un legs testamentaire et a quitté son travail actuel à l'age de 65 ans"
-      }`;
+      `- Introduire des enjeux de transmission\n`;
   } else {
     prompt +=
       `INFORMATION SUR L'ÂGE DU JOUEUR: Âge actif\n` +
       `DIRECTIVES:\n` +
-      `- Augmenter progressivement les enjeux\n` +
-      `EXEMPLE:\n{
-        "text": "Crédit immobilier",
-        "moneyChange": 4,
-        "healthChange": -2,
-        "karmaChange": -1,
-        "socialChange": -1,
-        "psychologicalProfileChange": "Responsable",
-        "memoryChange": "Le joueur a fait un crédit immobilier risqué à l'age de 40 ans"
-      }`;
+      `- Augmenter progressivement les enjeux\n`;
   }
 
   return prompt;
@@ -537,6 +446,7 @@ const generateSocialPrompt = (user: User): string => {
 
 const generatePsychologyPrompt = (user: User): string => {
   const traits = user.psychologicalProfile;
+  console.log("traits", traits);
   let prompt = `\n\n## INFLUENCE PSYCHOLOGIE (${
     traits.join(", ") || "Aucun"
   })\n`;
@@ -570,10 +480,10 @@ const generateMemoryPrompt = (user: User): string => {
       `- Proposer des options qui changent son passé\n`;
   } else {
     prompt +=
-      `INFORMATION SUR LES DERNIERS ÉVÈNEMENTS VÉCUS DU JOUEUR, garde les en mémoire mais ne les utilises pas à chaque fois : Mémoire du joueur : ${memory
+      `INFORMATION SUR LES DERNIERS ÉVÈNEMENTS VÉCUS DU JOUEUR, adapte le contexte de tes réponses à partir de cette mémoire, n'utilise pas forcément le contexte surtout si c'est des évènements pas très importants. Par contre il faut absolument se utiliser le contexte lors des choix de carrières, de familles etc : Voici les éléments de mémoire du joueur : ${memory
         .reverse()
         .join(", ")}\n` +
-      "COMMENT INTERPRETER LA MÉMOIRE DU JOUEUR: Tu dois faire attention à ne pas trop concentrer l'utilisateur sur un seul sujet. Par exemple si tu vois plusieurs fois des mémoires similaires à la suite, alors change de sujet." +
+      "COMMENT INTERPRETER LA MÉMOIRE DU JOUEUR: Tu dois faire attention à ne pas trop concentrer l'utilisateur sur un seul sujet. Par exemple si tu vois plusieurs fois des mémoires similaires à la suite, alors change de sujet. La mémoire la plus récente est plus importante que la plus ancienne." +
       `DIRECTIVES DE GÉNÉRATION:\n` +
       `- À chaque option, tu ajoutes un événement en rapport avec le choix\n` +
       `EXEMPLE: Si le joueur crée une entreprise ou une famille, tu ajoute dans la mémoire du joueur "Création d'une entreprise" ou "Mariage" en fonction du choix`;
@@ -616,9 +526,10 @@ export const buildMasterPrompt = (user: User): string => {
 **Règles :**
 - Décris une situation immersive en fonction de l'âge du joueur.
 - Propose **2 choix**, chacun ayant un impact sur les statistiques du joueur (santé, argent, karma, social, psychologie).
-- Ajoute des **événements aléatoires** qui rendent le jeu imprévisible.
+- Ajoute des **événements aléatoires** qui rendent le jeu imprévisible, tu peux ajouter des pièges, des opportunités, des évènements qui changent la vie du joueur.
 - Formate ta réponse en JSON.
 - Quand tu introduis des personnages secondaires, introduit leur nom et prend soin de le conserver dans la mémoire du joueur.
+- Le joueur meurt si il passe en dessous de 0 points de santé, son karma peut aller de -100 à +100, son argent peut aller de -10000000000 à +10000000000, son indice de sociabilité peut aller de -100 à +100.
 
 **Exemple pour un joueur de 10 ans :**
 {
@@ -658,7 +569,6 @@ export const buildMasterPrompt = (user: User): string => {
 
     prompt += generateAgePrompt(user);
     prompt += generatePsychologyPrompt(user);
-    prompt += generateMemoryPrompt(user);
 
     prompt += generateSchemaRequirements();
 
@@ -673,20 +583,7 @@ export const buildMasterPrompt = (user: User): string => {
   prompt += generateSocialPrompt(user);
   prompt += generatePsychologyPrompt(user);
   prompt += generateMemoryPrompt(user);
-
-  // Règles croisées
-  prompt += `\n\n## INTERACTIONS COMPLEXES\n`;
-  prompt +=
-    `1. COMBINAISON ÂGE/KARMA:\n` +
-    `- Si âge > 50 & karma < 0: Proposer des options de rédemption\n` +
-    `- Si âge < 30 & karma > 50: Introduire des tentations\n`;
-
-  prompt +=
-    `2. SANTÉ/ARGENT:\n` +
-    `- Santé < 30 & Argent < 0: Options extrêmes (organes, crimes)\n` +
-    `- Santé > 80 & Argent > 1M: Risques calculés (sports dangereux)\n`;
-
-  // Exemple contextuel
+  prompt += generateSchemaRequirements();
 
   return prompt;
 };
@@ -766,7 +663,7 @@ export async function POST(req: Request) {
       model: ollama("llama3.1"),
       prompt: generatedPrompt,
       schema: mainSchema,
-      temperature: 0.4, // Réduire encore la créativité
+      temperature: 0.5, // Réduire encore la créativité
     });
 
     // Validation stricte

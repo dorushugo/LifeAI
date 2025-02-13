@@ -50,7 +50,7 @@ const PopupModal = ({
         </button>
       </div>
       <ul className="space-y-4">
-        {items.map((item, index) => (
+        {items.reverse().map((item, index) => (
           <li key={index} className="text-xl text-white">
             • {item}
           </li>
@@ -68,7 +68,7 @@ export default function Home() {
   const [user, setUser] = useState<User | null>({
     gender: "",
     name: "",
-    age: 0,
+    age: 15,
     money: 0,
     health: 100,
     karma: 0,
@@ -89,6 +89,9 @@ export default function Home() {
   // Ajouter les états pour les popups
   const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
   const [isMemoryPopupOpen, setIsMemoryPopupOpen] = useState(false);
+
+  // Ajouter un état pour la sidebar mobile
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Create the clamped setter
   const setUserClamped: React.Dispatch<React.SetStateAction<User | null>> = (
@@ -279,12 +282,50 @@ export default function Home() {
 
   return (
     <div className="flex h-screen">
-      <Sidebar
-        user={user}
-        className="flex-shrink-0"
-        onOpenProfile={handleOpenProfile}
-        onOpenMemory={handleOpenMemory}
-      />
+      {/* Bouton mobile pour la sidebar */}
+      <button
+        onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        className="md:hidden fixed top-4 right-4 z-50 p-3 bg-[#191919] rounded-full shadow-lg"
+      >
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+
+      {/* Sidebar modifiée pour mobile */}
+      <div
+        className={`fixed md:relative z-40 h-full transform transition-transform duration-300 
+        ${
+          isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
+      >
+        <Sidebar
+          user={user}
+          className="flex-shrink-0"
+          onOpenProfile={handleOpenProfile}
+          onOpenMemory={handleOpenMemory}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
+        />
+      </div>
+
+      {/* Overlay pour mobile */}
+      {isMobileSidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-30"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
       <div className="flex-1 overflow-auto">
         <QuestionReponse user={user} setUser={setUserClamped} />
       </div>
