@@ -28,6 +28,41 @@ export interface User {
   memory: string[];
 }
 
+// Ajouter le type PopupModal
+const PopupModal = ({
+  title,
+  items,
+  onClose,
+}: {
+  title: string;
+  items: string[];
+  onClose: () => void;
+}) => (
+  <div className="fixed inset-0 flex max-w-xl items-center justify-center bg-black bg-opacity-50 z-[9999]">
+    <div className="bg-dark p-8 h-full max-w-2xl w-[90%] max-h-[80vh] overflow-y-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-white">{title}</h2>
+        <button
+          onClick={onClose}
+          className="text-white text-4xl hover:text-gray-600 transition-transform hover:scale-110"
+        >
+          &times;
+        </button>
+      </div>
+      <ul className="space-y-4">
+        {items.map((item, index) => (
+          <li key={index} className="text-xl text-white">
+            • {item}
+          </li>
+        ))}
+        {items.length === 0 && (
+          <p className="text-white italic">Aucun élément à afficher</p>
+        )}
+      </ul>
+    </div>
+  </div>
+);
+
 export default function Home() {
   const [asStarted, setAsStarted] = useState(false);
   const [user, setUser] = useState<User | null>({
@@ -51,6 +86,10 @@ export default function Home() {
     memory: [],
   });
 
+  // Ajouter les états pour les popups
+  const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
+  const [isMemoryPopupOpen, setIsMemoryPopupOpen] = useState(false);
+
   // Create the clamped setter
   const setUserClamped: React.Dispatch<React.SetStateAction<User | null>> = (
     update
@@ -69,6 +108,17 @@ export default function Home() {
       }
       return newUser;
     });
+  };
+
+  // Modifier les handlers pour fermer l'autre popup
+  const handleOpenProfile = () => {
+    setIsMemoryPopupOpen(false);
+    setIsProfilePopupOpen(true);
+  };
+
+  const handleOpenMemory = () => {
+    setIsProfilePopupOpen(false);
+    setIsMemoryPopupOpen(true);
   };
 
   // Start Game
@@ -229,10 +279,32 @@ export default function Home() {
 
   return (
     <div className="flex h-screen">
-      <Sidebar user={user} className="flex-shrink-0" />
+      <Sidebar
+        user={user}
+        className="flex-shrink-0"
+        onOpenProfile={handleOpenProfile}
+        onOpenMemory={handleOpenMemory}
+      />
       <div className="flex-1 overflow-auto">
         <QuestionReponse user={user} setUser={setUserClamped} />
       </div>
+
+      {/* Popups au niveau racine */}
+      {isProfilePopupOpen && (
+        <PopupModal
+          title="Profil psychologique"
+          items={user?.psychologicalProfile || []}
+          onClose={() => setIsProfilePopupOpen(false)}
+        />
+      )}
+
+      {isMemoryPopupOpen && (
+        <PopupModal
+          title="Mémoires"
+          items={user?.memory || []}
+          onClose={() => setIsMemoryPopupOpen(false)}
+        />
+      )}
     </div>
   );
 }

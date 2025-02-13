@@ -2,7 +2,15 @@
 import Image from "next/image";
 import { User } from "@/app/page";
 
-export default function Sidebar({ user }: { user: User | null }) {
+export default function Sidebar({
+  user,
+  onOpenProfile,
+  onOpenMemory,
+}: {
+  user: User | null;
+  onOpenProfile: () => void;
+  onOpenMemory: () => void;
+}) {
   return (
     <div
       style={{
@@ -70,42 +78,27 @@ export default function Sidebar({ user }: { user: User | null }) {
         </div>
         {/* Nouvelle section pour afficher le profil psychologique */}
 
-        <div className="mt-[61px] text-[24px] text-[#F1F1F1] pb-[12px]">
-          <p>Profil psychologique :</p>
-          <div className="flex items-center space-x-2">
-            <Image src="/Cerveau.svg" alt="QI" width={33} height={33} />
-            <span className="text-[#F1F1F1] text-[24px]">{user?.QI} de QI</span>
+        <div className="mt-[61px] text-[24px] text-[#F1F1F1] pb-[12px] w-full">
+          <div className="flex justify-between items-center mb-4">
+            <p>Profil psychologique :</p>
+            <button
+              onClick={onOpenProfile}
+              className="bg-[#F1F1F1] text-black px-4 py-2 rounded-lg text-[20px] hover:bg-gray-300 transition"
+            >
+              {user?.psychologicalProfile?.length || 0} traits
+            </button>
           </div>
-          {user?.psychologicalProfile?.length ? (
-            <div className="space-y-2 mt-2">
-              {user.psychologicalProfile.map((profile, index) => (
-                <p
-                  key={index}
-                  className="text-[20px] italic flex items-left justify-start"
-                >
-                  • {profile}
-                </p>
-              ))}
-            </div>
-          ) : (
-            <p className="text-[20px] italic mt-2 text-left">
-              Aucun profil défini
-            </p>
-          )}
-          {user?.memory?.length ? (
-            <div className="space-y-2 mt-2">
-              {user.memory.map((memory, index) => (
-                <p
-                  key={index}
-                  className="text-[20px] italic flex items-left justify-start"
-                >
-                  • {memory}
-                </p>
-              ))}
-            </div>
-          ) : (
-            <p className="text-[20px] italic mt-2 text-left">Aucune mémoire</p>
-          )}
+
+          {/* Section mémoire modifiée */}
+          <div className="flex justify-between items-center mt-6">
+            <p>Mémoires :</p>
+            <button
+              onClick={onOpenMemory}
+              className="bg-[#F1F1F1] text-black px-4 py-2 rounded-lg text-[20px] hover:bg-gray-300 transition"
+            >
+              {user?.memory?.length || 0} souvenirs
+            </button>
+          </div>
         </div>
       </div>
     </div>
