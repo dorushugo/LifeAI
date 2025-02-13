@@ -25,6 +25,7 @@ export interface User {
     karma: number;
     psychologicalProfileChanges: string[];
   };
+  memory: string[];
 }
 
 export default function Home() {
@@ -47,6 +48,7 @@ export default function Home() {
       karma: 0,
       psychologicalProfileChanges: [],
     },
+    memory: [],
   });
 
   // Create the clamped setter

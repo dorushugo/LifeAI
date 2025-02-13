@@ -31,6 +31,7 @@ const getAgePhase = (age: number) => {
         "karmaChange": 5,
         "socialChange": 3,
         "psychologicalProfileChange": "Bienveillant",
+        "memoryChange": "",
       },
       {
         "text": "Demander à papa d'aller au parc jouer au ballon",
@@ -39,6 +40,7 @@ const getAgePhase = (age: number) => {
         "karmaChange": 1,
         "socialChange": 4,
         "psychologicalProfileChange": "Sportif",
+        "memoryChange":"",
       }
 
       }`,
@@ -79,15 +81,17 @@ const getAgePhase = (age: number) => {
                   "moneyChange": -2,
                   "karmaChange": 2,
                   "socialChange": 3,
-                  "psychologicalProfileChange": "Sociable"
+                  "psychologicalProfileChange": "Sociable",
+                  "memoryChange": "Le joueur est allé à l'anniversaire de son camarade de classe à l'age de 6 ans"
                 },
                 {
                   "text": "Préférer rester à la maison",
                   "healthChange": 1,
-                  "moneyChange": 0,
+                  "moneyChange": 0, 
                   "karmaChange": -1,
                   "socialChange": -2,
-                  "psychologicalProfileChange": "Solitaire"
+                  "psychologicalProfileChange": "Solitaire",
+                  "memoryChange": "Le joueur à des tendances solitaires"
                 }
               ]
             }
@@ -112,7 +116,8 @@ const getAgePhase = (age: number) => {
             "moneyChange": -1,
             "karmaChange": 1,
             "socialChange": 1,
-            "psychologicalProfileChange": "Intellectuel"
+            "psychologicalProfileChange": "Intellectuel",
+            "memoryChange": "Le joueur a choisi de rejoindre le club de sciences à l'age de 12 ans"
           },
           {
             "text": "Équipe sportive",
@@ -120,7 +125,8 @@ const getAgePhase = (age: number) => {
             "moneyChange": -2,
             "karmaChange": 0,
             "socialChange": 2,
-            "psychologicalProfileChange": "Compétitif"
+            "psychologicalProfileChange": "Compétitif",
+            "memoryChange": "Le joueur a choisi de rejoindre l'équipe sportive à l'age de 12 ans"
           }
         ]
       }
@@ -144,7 +150,8 @@ const getAgePhase = (age: number) => {
             "moneyChange": -5,
             "karmaChange": 2,
             "socialChange": 1,
-            "psychologicalProfileChange": "Ambitieux"
+            "psychologicalProfileChange": "Ambitieux",
+            "memoryChange": "Le joueur a choisi de rejoindre une université prestigieuse au lieu d'aller à une formation professionnelle à l'age de 16 ans"
           },
           {
             "text": "Formation professionnelle",
@@ -152,7 +159,8 @@ const getAgePhase = (age: number) => {
             "moneyChange": 2,
             "karmaChange": -1,
             "socialChange": 3,
-            "psychologicalProfileChange": "Pragmatique"
+            "psychologicalProfileChange": "Pragmatique",
+            "memoryChange": "Le joueur a choisi de rejoindre une formation professionnelle au lieu d'aller à une université prestigieuse à l'age de 16 ans"
           }
         ]
       }
@@ -166,19 +174,31 @@ const getAgePhase = (age: number) => {
     - Dilemmes complexes sur son avenir
     - Enjeux d'étude et de carrière `,
       example: `{
-      "healthChange": -5,
-      "moneyChange": 8,
-      "karmaChange": -3,
-      "psychologicalProfile": "Rebelle",
-      "message": "Tu hésite à quitter l'école pour te lancer dans une activité...",
-      "question": {
-        "text": "Que décides-tu ?",
-        "options": [
-          {"text": "Chercher un travail", "effect": "+3 argent, -2 énergie"},
-          {"text": "Continuer les études", "effect": "-2 argent, +3 compétences"}
-        ]
-      }
-    }`,
+        "message": "Tu hésite à arrêter ce que tu fait pour créer ta propre entreprise...",
+        "question": {
+          "text": "Quelle voie suits-tu ?",
+          "options": [
+            {
+              "text": "Créer ta propre entreprise",
+              "healthChange": -3,
+              "moneyChange": -5,
+              "karmaChange": 2,
+              "socialChange": 1,
+              "psychologicalProfileChange": "Ambitieux",
+              "memoryChange": "Le joueur a créé sa propre entreprise et de quitter son travail actuel à l'age de 23 ans"
+            },
+            {
+              "text": "Continuer ton travail actuel",
+              "healthChange": 1,
+              "moneyChange": 2,
+              "karmaChange": -1,
+              "socialChange": 3,
+              "psychologicalProfileChange": "Pragmatique",
+              "memoryChange": "Le joueur a hésité à arrêter son travail actuel pour créer sa propre entreprise à l'age de 23 ans, mais il décide de continuer son travail actuel."
+            }
+          ]
+        }
+      }`,
     };
 
   if (age >= 25)
@@ -188,7 +208,7 @@ const getAgePhase = (age: number) => {
     - Dilemmes complexes avec impacts multiples
     - Enjeux familiaux/professionnels équilibrés`,
       example: `{
-      "message": "Tu reçois une offre de travail à l'étranger...",
+      "message": "Tu reçois une offre de travail à l'étranger, mais ta femme ne peux pas te suivre...",
       "question": {
         "text": "Acceptes-tu ?",
         "options": [
@@ -198,7 +218,8 @@ const getAgePhase = (age: number) => {
             "moneyChange": 4,
             "karmaChange": -1,
             "socialChange": -3,
-            "psychologicalProfileChange": "Aventurier"
+            "psychologicalProfileChange": "Aventurier",
+            "memoryChange": "Le joueur a accepté l'offre de travail à l'étranger et a quitté sa famille et ses amis à l'age de 26 ans"
           },
           {
             "text": "Non, rester près des miens",
@@ -206,7 +227,8 @@ const getAgePhase = (age: number) => {
             "moneyChange": -1,
             "karmaChange": 2,
             "socialChange": 2,
-            "psychologicalProfileChange": "Famille"
+            "psychologicalProfileChange": "Famille",
+            "memoryChange": "Le joueur a refusé l'offre de travail à l'étranger et a resté près de sa famille et de ses amis à l'age de 26 ans"
           }
         ]
       }
@@ -269,16 +291,15 @@ const getCurrentTheme = (age: number, interactionIndex: number) => {
   return AGE_THEMES[phase][interactionIndex % 5];
 };
 
-// Modifier le schema des options :
+// Modifier le schema des options avec des valeurs par défaut explicites
 const optionSchema = z.object({
   text: z.string().describe("Texte de l'option"),
-  healthChange: z.number().min(-100).max(100),
-  moneyChange: z.number().min(-100).max(100),
-  karmaChange: z.number().min(-50).max(50),
-  socialChange: z.number().min(-100).max(100),
-  psychologicalProfileChange: z
-    .string()
-    .describe("Mot clé psychologique à ajouter/enlever"),
+  healthChange: z.number().min(-100).max(100).default(0),
+  moneyChange: z.number().min(-100).max(100).default(0),
+  karmaChange: z.number().min(-100).max(100).default(0),
+  socialChange: z.number().min(-100).max(100).default(0),
+  psychologicalProfileChange: z.string().optional().default(""), // Default explicite
+  memoryChange: z.string().optional().default(""), // Default vide
 });
 
 // Modifier le schema principal :
@@ -286,7 +307,7 @@ const mainSchema = z.object({
   message: z.string().describe("Message contextuel"),
   question: z.object({
     text: z.string().describe("Question principale"),
-    options: z.array(optionSchema).min(2).max(6),
+    options: z.array(optionSchema).length(2),
   }),
 });
 
@@ -334,7 +355,8 @@ const generateMoneyPrompt = (user: User): string => {
         "healthChange": -3,
         "karmaChange": -2,
         "socialChange": -1,
-        "psychologicalProfileChange": "Désespéré"
+        "psychologicalProfileChange": "Désespéré",
+        "memoryChange": "Le joueur a emprunté à un taux usuraire et a perdu son travail actuel à l'age de 28 ans"
       }`;
   } else if (money > 1000000) {
     prompt +=
@@ -348,7 +370,8 @@ const generateMoneyPrompt = (user: User): string => {
         "healthChange": -4,
         "karmaChange": -3,
         "socialChange": 1,
-        "psychologicalProfileChange": "Avaricieux"
+        "psychologicalProfileChange": "Avaricieux",
+        "memoryChange": "Le joueur a investi dans un projet douteux et a perdu son travail actuel à l'age de 30 ans"
       }`;
   } else {
     prompt +=
@@ -361,7 +384,8 @@ const generateMoneyPrompt = (user: User): string => {
         "healthChange": -1,
         "karmaChange": 1,
         "socialChange": 0,
-        "psychologicalProfileChange": "Stable"
+        "psychologicalProfileChange": "Stable",
+        "memoryChange": "Le joueur a accepté un CDI stable et a continué son travail actuel à l'age de 35 ans"
       }`;
   }
 
@@ -383,7 +407,8 @@ const generateHealthPrompt = (user: User): string => {
         "moneyChange": -4,
         "karmaChange": 2,
         "socialChange": -3,
-        "psychologicalProfileChange": "Courageux"
+        "psychologicalProfileChange": "Courageux",
+        "memoryChange": "Le joueur a subi une opération risquée et a perdu son travail actuel à l'age de 32 ans"
       }`;
   } else if (health > 80) {
     prompt +=
@@ -396,7 +421,8 @@ const generateHealthPrompt = (user: User): string => {
         "moneyChange": -2,
         "karmaChange": 3,
         "socialChange": 1,
-        "psychologicalProfileChange": "Aventurier"
+        "psychologicalProfileChange": "Aventurier",
+        "memoryChange": "Le joueur a traversé l'Amazonie à pied et a perdu son travail actuel à l'age de 34 ans"
       }`;
   } else {
     prompt +=
@@ -409,7 +435,8 @@ const generateHealthPrompt = (user: User): string => {
         "moneyChange": 4,
         "karmaChange": -1,
         "socialChange": -2,
-        "psychologicalProfileChange": "Épuisé"
+        "psychologicalProfileChange": "Épuisé",
+        "memoryChange": "Le joueur a fait un burn-out et a perdu son travail actuel à l'age de 36 ans"
       }`;
   }
 
@@ -432,7 +459,8 @@ const generateAgePrompt = (user: User): string => {
       "moneyChange": 0,
       "karmaChange": 0,
       "socialChange": 0,
-      "psychologicalProfileChange": "Curieux"
+      "psychologicalProfileChange": "Curieux",
+      "memoryChange": ""
     }`;
   } else if (age < 18) {
     prompt +=
@@ -445,7 +473,8 @@ const generateAgePrompt = (user: User): string => {
         "moneyChange": -1,
         "karmaChange": 1,
         "socialChange": 2,
-        "psychologicalProfileChange": "Curieux"
+        "psychologicalProfileChange": "Curieux",
+        "memoryChange": "Le joueur a fait un choix d'orientation et a quitté ses études à l'age de 18 ans"
       }`;
   } else if (age > 60) {
     prompt +=
@@ -458,7 +487,8 @@ const generateAgePrompt = (user: User): string => {
         "karmaChange": 2,
         "healthChange": 0,
         "socialChange": 1,
-        "psychologicalProfileChange": "Généreux"
+        "psychologicalProfileChange": "Généreux",
+        "memoryChange": "Le joueur a fait un legs testamentaire et a quitté son travail actuel à l'age de 65 ans"
       }`;
   } else {
     prompt +=
@@ -471,7 +501,8 @@ const generateAgePrompt = (user: User): string => {
         "healthChange": -2,
         "karmaChange": -1,
         "socialChange": -1,
-        "psychologicalProfileChange": "Responsable"
+        "psychologicalProfileChange": "Responsable",
+        "memoryChange": "Le joueur a fait un crédit immobilier risqué à l'age de 40 ans"
       }`;
   }
 
@@ -506,7 +537,8 @@ const generateSocialPrompt = (user: User): string => {
         "socialChange": 4,
         "moneyChange": 2,
         "healthChange": -2,
-        "psychologicalProfileChange": "Charismatique"
+        "psychologicalProfileChange": "Charismatique",
+        "memoryChange": "Le joueur a organisé un événement networking important à l'age de 45 ans"
       }`;
   } else {
     prompt +=
@@ -518,7 +550,8 @@ const generateSocialPrompt = (user: User): string => {
         "socialChange": 1,
         "healthChange": 1,
         "karmaChange": 0,
-        "psychologicalProfileChange": "Équilibré"
+        "psychologicalProfileChange": "Équilibré",
+        "memoryChange": "Le joueur a fait une sortie occasionnelle et a rencontré un nouvel ami à l'age de 50 ans"
       }`;
   }
 
@@ -539,7 +572,8 @@ const generatePsychologyPrompt = (user: User): string => {
       `- Proposer des options polarisantes\n` +
       `EXEMPLE:\n{
         "text": "Première grande décision",
-        "psychologicalProfileChange": "Déterminé"
+        "psychologicalProfileChange": "Déterminé",
+        "memoryChange": "Le joueur a fait une grande décision et a quitté son travail actuel à l'age de 55 ans"
       }`;
   } else {
     prompt +=
@@ -551,8 +585,35 @@ const generatePsychologyPrompt = (user: User): string => {
         "text": "Choix entre ambition et éthique",
         "psychologicalProfileChange": "${traits[0]}",
         "karmaChange": -2,
-        "socialChange": 1
+        "socialChange": 1,
+        "memoryChange": "Le joueur a fait un choix entre ambition et éthique et a quitté son travail actuel à l'age de 60 ans"
       }`;
+  }
+
+  return prompt;
+};
+
+const generateMemoryPrompt = (user: User): string => {
+  const memory = user.memory;
+  let prompt = `\n\n## INFLUENCE MEMOIRE (${memory.join(", ") || "Aucun"})\n`;
+
+  if (memory.length === 0) {
+    prompt +=
+      `INFORMATION SUR LE PASSÉ DU JOUEUR: Aucune mémoire particulière\n` +
+      `DIRECTIVES:\n` +
+      `- Définir le passé du joueur\n` +
+      `- Proposer des options qui changent son passé\n` +
+      `EXEMPLE:\n{
+          "text": "Première grande décision",
+          "psychologicalProfileChange": "Déterminé",
+          "memoryChange": "Le joueur a fait une grande décision et a quitté son travail actuel à l'age de 55 ans"
+        }`;
+  } else {
+    prompt +=
+      `INFORMATION SUR LES TRAITS DU JOUEUR: Traits dominants détectés\n` +
+      `DIRECTIVES:\n` +
+      `- À chaque option, tu ajoutes un événement en rapport avec le choix\n` +
+      `EXEMPLE: Si le joueur crée une entreprise ou une famille, tu ajoute dans la mémoire du joueur "Création d'une entreprise" ou "Mariage" en fonction du choix`;
   }
 
   return prompt;
@@ -568,12 +629,12 @@ const generateSchemaRequirements = (): string => {
           text: string;
           options: {
             text: string;
-            healthChange: number (-5
-             à +5);
-            moneyChange: number (-5 à +5);
-            karmaChange: number (-5 à +5);
-            socialChange: number (-5 à +5);
+            healthChange: number (-100 à +100);
+            moneyChange: number (-100 à +100);
+            karmaChange: number (-100 à +100);
+            socialChange: number (-100 à +100);
             psychologicalProfileChange: string;
+            memoryChange: string;
           }[];
         }
       }`
@@ -602,12 +663,13 @@ export const buildMasterPrompt = (user: User): string => {
     "text": "Que décides-tu ?",
     "options": [
       {
-        "text": "Y aller et t’amuser",
+        "text": "Y aller et t'amuser",
         "healthChange": -1,
         "moneyChange": -2,
         "karmaChange": 2,
         "socialChange": 3,
-        "psychologicalProfileChange": "Sociable"
+        "psychologicalProfileChange": "Sociable",
+        "memoryChange": "Le joueur a fait une fête avec ses camarades de classe à l'age de 10 ans"
       },
       {
         "text": "Rester à la maison pour te reposer",
@@ -615,7 +677,8 @@ export const buildMasterPrompt = (user: User): string => {
         "moneyChange": 0,
         "karmaChange": -1,
         "socialChange": -2,
-        "psychologicalProfileChange": "Introverti"
+        "psychologicalProfileChange": "Introverti",
+        "memoryChange": "Le joueur a resté à la maison pour se reposer à l'age de 10 ans"
       }
     ]
   }
@@ -661,8 +724,17 @@ export const buildMasterPrompt = (user: User): string => {
   return prompt;
 };
 
-export async function POST(req: Request) {
+// Ajouter une fonction de validation renforcée
+const validateResponse = (data: unknown) => {
+  const result = mainSchema.safeParse(data);
+  if (!result.success) {
+    console.error("Validation error:", JSON.stringify(result.error, null, 2));
+    throw new Error(`Invalid response structure: ${result.error.message}`);
+  }
+  return result.data;
+};
 
+export async function POST(req: Request) {
   try {
     const body = await req.json();
     const gameState = body.gameState;
@@ -681,6 +753,7 @@ export async function POST(req: Request) {
       interactionCount: gameState.interactionCount,
       pendingChanges: gameState.pendingChanges,
       QI: gameState.QI,
+      memory: gameState.memory,
     };
 
     const generatedPrompt =
@@ -700,7 +773,8 @@ export async function POST(req: Request) {
           "moneyChange": 2,
           "karmaChange": -2,
           "socialChange": 0,
-          "psychologicalProfileChange": "Trait 1"
+          "psychologicalProfileChange": "Trait 1",
+          "memoryChange": "Mémoire associée à l'option 1, tu peux la laisser vide si il n'y a pas d'événement marquent l'histoire du joueur"
         },
         {
           "text": "Option 2",
@@ -708,7 +782,8 @@ export async function POST(req: Request) {
           "moneyChange": 0,
           "karmaChange": 0,
           "socialChange": 0,
-          "psychologicalProfileChange": "Trait 2"
+          "psychologicalProfileChange": "Trait 2",
+          "memoryChange": "Mémoire associée à l'option 2, tu peux la laisser vide si il n'y a pas d'événement marquent l'histoire du joueur"
         }
       }
     }`;
@@ -723,27 +798,34 @@ export async function POST(req: Request) {
     const result = await generateObject({
       model: ollama("llama3.1"),
       prompt: generatedPrompt,
-      temperature: 0.8, // Plus créatif
       schema: mainSchema,
+      temperature: 0.4, // Réduire encore la créativité
     });
 
-    // Log de la réponse
-    console.log("\n======= RÉPONSE IA =======");
-    console.log("Données:", JSON.stringify(result.object, null, 2));
-    console.log("=========================\n");
+    // Validation stricte
+    const validatedData = validateResponse(result.object);
 
-    // Post-traitement des résultats
-    const structuredOutput = result.object;
-    structuredOutput.question.options = structuredOutput.question.options
-      .slice(0, 2) // Garder seulement 2 options
-      .map((option) => ({
-        ...option,
-        // Normalisation des valeurs
-        healthChange: clamp(option.healthChange, -5, 5),
-        moneyChange: clamp(option.moneyChange, -5, 5),
-        karmaChange: clamp(option.karmaChange, -5, 5),
-        socialChange: clamp(option.socialChange, -5, 5),
-      }));
+    // Post-traitement garantissant les valeurs
+    const structuredOutput = {
+      message: validatedData.message,
+      question: {
+        text: validatedData.question.text,
+        options: validatedData.question.options.map((option) => ({
+          text: option.text.substring(0, 200), // Limiter la longueur
+          healthChange: Math.min(Math.max(option.healthChange, -5), 5),
+          moneyChange: Math.min(Math.max(option.moneyChange, -5), 5),
+          karmaChange: Math.min(Math.max(option.karmaChange, -5), 5),
+          socialChange: Math.min(Math.max(option.socialChange, -5), 5),
+          psychologicalProfileChange:
+            option.psychologicalProfileChange?.substring(0, 20) || "Neutre",
+          memoryChange:
+            option.memoryChange?.replace(
+              /à l'age de \d+ ans/,
+              `à ${user.age} ans`
+            ) || "",
+        })),
+      },
+    };
 
     return NextResponse.json({ structuredOutput });
   } catch (error) {

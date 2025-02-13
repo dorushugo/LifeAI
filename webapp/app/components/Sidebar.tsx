@@ -92,6 +92,20 @@ export default function Sidebar({ user }: { user: User | null }) {
               Aucun profil défini
             </p>
           )}
+          {user?.memory?.length ? (
+            <div className="space-y-2 mt-2">
+              {user.memory.map((memory, index) => (
+                <p
+                  key={index}
+                  className="text-[20px] italic flex items-left justify-start"
+                >
+                  • {memory}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p className="text-[20px] italic mt-2 text-left">Aucune mémoire</p>
+          )}
         </div>
       </div>
     </div>
