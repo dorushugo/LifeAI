@@ -506,7 +506,7 @@ const generatePsychologyPrompt = (user: User): string => {
 
 const generateMemoryPrompt = (user: User): string => {
   const memory = user.memory;
-  let prompt = `\n\n## INFLUENCE MEMOIRE (${memory.join(", ") || "Aucun"})\n`;
+  let prompt = `\n\n## INFLUENCE MEMOIRE\n`;
 
   if (memory.length === 0) {
     prompt +=
