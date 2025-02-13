@@ -268,7 +268,7 @@ export default function QuestionReponse({
                   (option, index) => (
                     <motion.div
                       key={index}
-                      className="cursor-pointer relative pb-2 border-t-0 text-xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-[280px] h-[100px]"
+                      className="cursor-pointer relative pb-2 border-t-0 text-xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-[280px]"
                       variants={{
                         initial: { paddingBottom: "15px" },
                         hover: {
@@ -281,7 +281,7 @@ export default function QuestionReponse({
                       onClick={() => handleOptionClick(option)}
                     >
                       <motion.button
-                        className="relative w-full h-[85px] px-6 text-xl text-black rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#F1F1F1] before:rounded-[20px] break-words flex items-center justify-center"
+                        className="relative w-full py-2 px-6 text-xl text-black rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#F1F1F1] before:rounded-[20px] break-words flex items-center justify-center"
                         variants={{
                           initial: { y: 0 },
                           hover: {
