@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { generateObject } from "ai";
-import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -15,43 +14,59 @@ const ollama = createOllama({
 const getAgePhase = (age: number) => {
   if (age < 5)
     return {
-      instructions: `Phase Nourrisson (0-5 ans) :
-    - Décisions familiales simples
+      instructions: `Phase Nourrisson (0-4 ans) :
     - Apprentissage des bases (marche, langage)
-    - Conséquences temporaires uniquement
-    Exemple : Choix alimentaires, activités ludiques`,
+    - La scène doit être **chaleureuse, humoristique et réaliste**.
+    - Intègre des **interactions familiales naturelles** (ex: parents, frères/sœurs, amis, baby-sitter).
+    - Le choix du joueur doit être un **dilemme du quotidien d'un enfant**.
+    - Certains choix doivent avoir **des conséquences cachées**, qui influenceront **les futures étapes du jeu**
+
+
+    Exemple : Choix alimentaires, activités ludiques, création d'un cercle sociale,`,
       example: `{
-        "message": "Tes parents te proposent une activité...",
-        "question": {
-          "text": "Que préfères-tu faire ?",
-          "options": [
-            {
-              "text": "Dessiner avec maman",
-              "healthChange": 1,
-              "moneyChange": 0,
-              "karmaChange": 0,
-              "socialChange": 2,
-              "psychologicalProfileChange": "Créatif"
-            },
-            {
-              "text": "Jouer au ballon",
-              "healthChange": 2,
-              "moneyChange": 0,
-              "karmaChange": 1,
-              "socialChange": 1,
-              "psychologicalProfileChange": "Sportif"
-            }
-          ]
-        }
+        {
+        "text": "Aider maman à calmer ton petit frère",
+        "healthChange": 2,
+        "moneyChange": 0,
+        "karmaChange": 5,
+        "socialChange": 3,
+        "psychologicalProfileChange": "Bienveillant",
+      },
+      {
+        "text": "Demander à papa d'aller au parc jouer au ballon",
+        "healthChange": 5,
+        "moneyChange": 0,
+        "karmaChange": 1,
+        "socialChange": 4,
+        "psychologicalProfileChange": "Sportif",
+      }
+
       }`,
     };
 
-  if (age >= 6 && age < 10)
+  if (age >= 5 && age < 9)
     return {
-      instructions: `Phase Nourrisson (0-5 ans) :
-        - Décisions familiales simples
-        - Apprentissage des bases (marche, langage)
-        - Conséquences temporaires uniquement
+      instructions: `Phase enfance (5-10 ans) :
+- L'enfant commence à explorer son environnement social et le modèle scolaire français.
+- Les décisions sont simples mais influencent son apprentissage et ses relations.
+- Les conséquences sont temporaires mais peuvent affecter son profil psychologique.
+
+**Instructions Générales :**
+1. Génère une **scène immersive et engageante** qui correspond à un enfant de 6-10 ans.
+2. Décris l'environnement avec des **détails sensoriels et émotionnels** (ex: "la cloche sonne, la cour est remplie d'enfants qui rient").
+3. Introduis un **événement** où le joueur doit prendre une décision (ex: une invitation à un anniversaire, une dispute dans la cour, un choix d'activité après l'école).
+4. Fournis **2 choix**, chacun ayant une influence sur les variables du jeu :
+   - **Santé** (ex: choix qui favorisent ou diminuent l'énergie de l'enfant)
+   - **Argent** (ex: conséquences sur les dépenses familiales)
+   - **Karma** (ex: gentillesse, honnêteté, comportement social)
+   - **Relations sociales** (ex: renforcer une amitié, se replier sur soi-même)
+   - **Profil psychologique** (ex: développer une personnalité sociable, solitaire, créative, sportive)
+
+ **Exigences Spécifiques :**
+- Évite les choix évidents **(pas de "bon" ou "mauvais" choix)**.
+- Assure-toi que chaque décision est réaliste et cohérente avec l'âge de l'enfant.
+- Ajoute un **événement aléatoire** qui pourrait surprendre le joueur (ex: un imprévu pendant la fête).
+- La sortie doit être au **format JSON**.
         Exemple : Choix alimentaires, activités ludiques`,
       example: `{
             "message": "Un camarade de classe t'invite à son anniversaire...",
@@ -79,11 +94,11 @@ const getAgePhase = (age: number) => {
           }`,
     };
 
-  if (age >= 10 && age < 15)
+  if (age >= 10 && age < 14)
     return {
       instructions: `Pré-Adolescence (11-15 ans) :
     - Prise d'autonomie progressive
-    - Gestion du temps scolaire/loisirs
+    - Gestion du temps scolaire(qui se base sur le modèle scolaire français)/loisirs
     - Conséquences sur 5 ans max
     Exemple : Orientation scolaire, premiers conflits`,
       example: `{
@@ -112,7 +127,7 @@ const getAgePhase = (age: number) => {
     }`,
     };
 
-  if (age >= 15 && age < 20)
+  if (age >= 15 && age < 19)
     return {
       instructions: `Phase Adolescence (16-25 ans) :
     - Introduit progressivement les conséquences à long terme
@@ -144,7 +159,7 @@ const getAgePhase = (age: number) => {
     }`,
     };
 
-  if (age >= 20 && age < 25)
+  if (age >= 20 && age < 24)
     return {
       instructions: `Phase Pré-Adulte (20-25 ans) :
     - Conséquences importantes mais pas définitives
@@ -257,10 +272,10 @@ const getCurrentTheme = (age: number, interactionIndex: number) => {
 // Modifier le schema des options :
 const optionSchema = z.object({
   text: z.string().describe("Texte de l'option"),
-  healthChange: z.number().min(-5).max(5),
-  moneyChange: z.number().min(-5).max(5),
-  karmaChange: z.number().min(-5).max(5),
-  socialChange: z.number().min(-5).max(5),
+  healthChange: z.number().min(-100).max(100),
+  moneyChange: z.number().min(-100).max(100),
+  karmaChange: z.number().min(-50).max(50),
+  socialChange: z.number().min(-100).max(100),
   psychologicalProfileChange: z
     .string()
     .describe("Mot clé psychologique à ajouter/enlever"),
@@ -553,7 +568,8 @@ const generateSchemaRequirements = (): string => {
           text: string;
           options: {
             text: string;
-            healthChange: number (-5 à +5);
+            healthChange: number (-5
+             à +5);
             moneyChange: number (-5 à +5);
             karmaChange: number (-5 à +5);
             socialChange: number (-5 à +5);
@@ -571,7 +587,39 @@ const generateSchemaRequirements = (): string => {
 // ================= COMBINAISON FINALE =================
 
 export const buildMasterPrompt = (user: User): string => {
-  let prompt = `ROLE: Tu est un maître de jeu pour un jeu de la vie. Tu accompagne l'utilisateur dans ses décisions tout le long de sa vie, chaque fois qu'on t'utilise tu recois des informations sur les stats de l'utilisateur et tu dois générer des questions adaptées en fonction du profil de l'utilisateur.\n\n`;
+  let prompt = `ROLE: Tu es un assistant narratif dans un jeu de simulation de vie où le joueur prend des décisions influençant son destin.
+
+**Règles :**
+- Décris une situation immersive en fonction de l'âge du joueur.
+- Propose **2 choix**, chacun ayant un impact sur les statistiques du joueur (santé, argent, karma, social, psychologie).
+- Ajoute des **événements aléatoires** qui rendent le jeu imprévisible.
+- Formate ta réponse en JSON.
+
+**Exemple pour un joueur de 10 ans :**
+{
+  "message": "Un camarade de classe organise une grande fête ce week-end. Tout le monde en parle ! Tu hésites sur quoi faire...",
+  "question": {
+    "text": "Que décides-tu ?",
+    "options": [
+      {
+        "text": "Y aller et t’amuser",
+        "healthChange": -1,
+        "moneyChange": -2,
+        "karmaChange": 2,
+        "socialChange": 3,
+        "psychologicalProfileChange": "Sociable"
+      },
+      {
+        "text": "Rester à la maison pour te reposer",
+        "healthChange": 2,
+        "moneyChange": 0,
+        "karmaChange": -1,
+        "socialChange": -2,
+        "psychologicalProfileChange": "Introverti"
+      }
+    ]
+  }
+}`;
 
   if (user.age < 15) {
     // Mode enfant : focus sur la personnalité
@@ -614,13 +662,6 @@ export const buildMasterPrompt = (user: User): string => {
 };
 
 export async function POST(req: Request) {
-  // const session = await auth.api.getSession({
-  //   headers: await headers(),
-  // });
-
-  // if (!session?.user?.id) {
-  //   return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  // }
 
   try {
     const body = await req.json();
