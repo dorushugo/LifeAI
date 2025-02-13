@@ -1,14 +1,22 @@
 import { User } from "@/app/page";
 import { PsychologicalEngine } from "./psychologicalEngine";
 import { EventSystem } from "./eventsystem";
+import { PromptEngineering } from './promptEngineering';
 
 export class GameOrchestrator {
   private psychEngine: PsychologicalEngine;
   private eventSystem: EventSystem;
+  private promptEngine: PromptEngineering;
 
   constructor(private user: User) {
     this.psychEngine = new PsychologicalEngine(user);
     this.eventSystem = new EventSystem(user);
+    this.promptEngine = new PromptEngineering();
+  }
+
+  private getCurrentContext(): string {
+    // Implement the logic to get the current context
+    return "current context";
   }
 
   async processUserResponse(response: string): Promise<{
@@ -24,6 +32,23 @@ export class GameOrchestrator {
       socialSkills: number;
     };
   }> {
+    // Génère un prompt optimisé pour l'analyse
+    const analysisPrompt = await this.promptEngine.generatePrompt(
+      this.user,
+      response,
+      "analysis"
+    );
+
+    // Analyse la réponse
+    const analysis = await this.psychEngine.analyzeDecision(response);
+
+    // Génère la prochaine question
+    const questionPrompt = await this.promptEngine.generatePrompt(
+      this.user,
+      this.getCurrentContext(),
+      "question"
+    );
+
     // Analyse psychologique de la réponse
     const psychAnalysis = await this.psychEngine.analyzeDecision(response);
 
