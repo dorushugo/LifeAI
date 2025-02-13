@@ -518,41 +518,18 @@ const generateSocialPrompt = (user: User): string => {
       `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Compétences sociales faibles\n` +
       `DIRECTIVES:\n` +
       `- Proposer des options isolantes\n` +
-      `- Ajouter des pénalités sociales cachées\n` +
-      `EXEMPLE:\n{
-        "text": "Refuser une invitation",
-        "socialChange": -3,
-        "healthChange": 1,
-        "karmaChange": 0,
-        "psychologicalProfileChange": "Solitaire"
-      }`;
+      `- Ajouter des pénalités sociales cachées\n`;
   } else if (social > 70) {
     prompt +=
       `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Grand réseau social\n` +
       `DIRECTIVES:\n` +
       `- Introduire des opportunités relationnelles\n` +
-      `- Utiliser le capital social comme ressource\n` +
-      `EXEMPLE:\n{
-        "text": "Organiser un événement networking",
-        "socialChange": 4,
-        "moneyChange": 2,
-        "healthChange": -2,
-        "psychologicalProfileChange": "Charismatique",
-        "memoryChange": "Le joueur a organisé un événement networking important à l'age de 45 ans"
-      }`;
+      `- Utiliser le capital social comme ressource\n`;
   } else {
     prompt +=
       `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Réseau social moyen\n` +
       `DIRECTIVES:\n` +
-      `- Maintenir un équilibre relations/vie privée\n` +
-      `EXEMPLE:\n{
-        "text": "Accepter une sortie occasionnelle",
-        "socialChange": 1,
-        "healthChange": 1,
-        "karmaChange": 0,
-        "psychologicalProfileChange": "Équilibré",
-        "memoryChange": "Le joueur a fait une sortie occasionnelle et a rencontré un nouvel ami à l'age de 50 ans"
-      }`;
+      `- Maintenir un équilibre relations/vie privée\n`;
   }
 
   return prompt;
@@ -569,25 +546,13 @@ const generatePsychologyPrompt = (user: User): string => {
       `INFORMATION SUR LES TRAITS DU JOUEUR: Aucun trait dominant\n` +
       `DIRECTIVES:\n` +
       `- Définir le profil psychologique\n` +
-      `- Proposer des options polarisantes\n` +
-      `EXEMPLE:\n{
-        "text": "Première grande décision",
-        "psychologicalProfileChange": "Déterminé",
-        "memoryChange": "Le joueur a fait une grande décision et a quitté son travail actuel à l'age de 55 ans"
-      }`;
+      `- Proposer des options polarisantes\n`;
   } else {
     prompt +=
       `INFORMATION SUR LES TRAITS DU JOUEUR: Traits dominants détectés\n` +
       `DIRECTIVES:\n` +
       `- Renforcer 1 trait existant par option\n` +
-      `- Créer des conflits entre traits\n` +
-      `EXEMPLE:\n{
-        "text": "Choix entre ambition et éthique",
-        "psychologicalProfileChange": "${traits[0]}",
-        "karmaChange": -2,
-        "socialChange": 1,
-        "memoryChange": "Le joueur a fait un choix entre ambition et éthique et a quitté son travail actuel à l'age de 60 ans"
-      }`;
+      `- Créer des conflits entre traits\n`;
   }
 
   return prompt;
@@ -602,16 +567,14 @@ const generateMemoryPrompt = (user: User): string => {
       `INFORMATION SUR LE PASSÉ DU JOUEUR: Aucune mémoire particulière\n` +
       `DIRECTIVES:\n` +
       `- Définir le passé du joueur\n` +
-      `- Proposer des options qui changent son passé\n` +
-      `EXEMPLE:\n{
-          "text": "Première grande décision",
-          "psychologicalProfileChange": "Déterminé",
-          "memoryChange": "Le joueur a fait une grande décision et a quitté son travail actuel à l'age de 55 ans"
-        }`;
+      `- Proposer des options qui changent son passé\n`;
   } else {
     prompt +=
-      `INFORMATION SUR LES TRAITS DU JOUEUR: Traits dominants détectés\n` +
-      `DIRECTIVES:\n` +
+      `INFORMATION SUR LES DERNIERS ÉVÈNEMENTS VÉCUS DU JOUEUR, garde les en mémoire mais ne les utilises pas à chaque fois : Mémoire du joueur : ${memory
+        .reverse()
+        .join(", ")}\n` +
+      "COMMENT INTERPRETER LA MÉMOIRE DU JOUEUR: Tu dois faire attention à ne pas trop concentrer l'utilisateur sur un seul sujet. Par exemple si tu vois plusieurs fois des mémoires similaires à la suite, alors change de sujet." +
+      `DIRECTIVES DE GÉNÉRATION:\n` +
       `- À chaque option, tu ajoutes un événement en rapport avec le choix\n` +
       `EXEMPLE: Si le joueur crée une entreprise ou une famille, tu ajoute dans la mémoire du joueur "Création d'une entreprise" ou "Mariage" en fonction du choix`;
   }
@@ -655,6 +618,7 @@ export const buildMasterPrompt = (user: User): string => {
 - Propose **2 choix**, chacun ayant un impact sur les statistiques du joueur (santé, argent, karma, social, psychologie).
 - Ajoute des **événements aléatoires** qui rendent le jeu imprévisible.
 - Formate ta réponse en JSON.
+- Quand tu introduis des personnages secondaires, introduit leur nom et prend soin de le conserver dans la mémoire du joueur.
 
 **Exemple pour un joueur de 10 ans :**
 {
@@ -694,6 +658,8 @@ export const buildMasterPrompt = (user: User): string => {
 
     prompt += generateAgePrompt(user);
     prompt += generatePsychologyPrompt(user);
+    prompt += generateMemoryPrompt(user);
+
     prompt += generateSchemaRequirements();
 
     return prompt;
@@ -706,6 +672,7 @@ export const buildMasterPrompt = (user: User): string => {
   prompt += generateAgePrompt(user);
   prompt += generateSocialPrompt(user);
   prompt += generatePsychologyPrompt(user);
+  prompt += generateMemoryPrompt(user);
 
   // Règles croisées
   prompt += `\n\n## INTERACTIONS COMPLEXES\n`;
