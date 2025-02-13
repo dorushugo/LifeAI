@@ -21,6 +21,18 @@ type QuestionReponseProps = {
   setUser: (user: User) => void;
 };
 
+// Mise à jour du type Option
+type OptionType = {
+  text: string;
+  healthChange: number;
+  moneyChange: number;
+  karmaChange: number;
+  socialChange: number;
+  psychologicalProfileChange: string;
+  memoryChange: string; // Ajout de la propriété mémoire
+};
+
+// Mise à jour du type ApiResponse
 type ApiResponse = {
   structuredOutput: {
     healthChange: number;
@@ -30,11 +42,7 @@ type ApiResponse = {
     message: string;
     question: {
       text: string;
-      options: Array<{
-        text: string;
-        effect: string;
-        psychologicalProfileChange: string;
-      }>;
+      options: OptionType[]; // Utilisation du nouveau type OptionType
     };
   };
 };
@@ -51,7 +59,6 @@ export default function QuestionReponse({
     data: currentQuestion,
     isLoading,
     error,
-    refetch,
   } = useQuery<ApiResponse>({
     queryKey: ["initialQuestion", user?.interactionCount],
     queryFn: async () => {
@@ -91,11 +98,10 @@ export default function QuestionReponse({
         errorStack: error.stack?.split("\n").slice(0, 2).join(" "),
       });
     },
-    enabled: !!user, // Ne s'exécute que quand user est disponible
-    initialData: null,
+    enabled: !!user,
+    staleTime: Infinity,
   });
 
-  // ... dans le composant QuestionReponse, avant le return ...
   const handleOptionClick = (option: OptionType) => {
     const newUser = {
       ...user,
@@ -108,7 +114,12 @@ export default function QuestionReponse({
           (word) => word !== option.psychologicalProfileChange
         ),
         option.psychologicalProfileChange,
-      ].slice(0, 3), // Garde 3 mots max
+      ].slice(0, 6),
+      // Ajout de la mémoire uniquement si elle n'est pas vide
+      memory: [
+        ...user.memory,
+        ...(option.memoryChange ? [option.memoryChange] : []),
+      ].slice(-20), // Garde les 20 dernières mémoires
       interactionCount: user.interactionCount + 1,
     };
 
@@ -118,15 +129,7 @@ export default function QuestionReponse({
     }
 
     setUser(newUser);
-    refetch();
   };
-
-  // Effet pour générer les questions au chargement
-  useEffect(() => {
-    if (user) {
-      refetch();
-    }
-  }, [user, refetch]);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen text-black bg-[#F1F1F1]">
@@ -191,10 +194,8 @@ export default function QuestionReponse({
         </button>
       </div>
       <div className="w-full h-full p-20 flex flex-col items-center justify-between rounded-lg">
-        {/* Nouvelle barre de progression avec SVG */}
         <div className="w-full h-4 relative mb-6 mt-10 flex items-center justify-center">
           <div className="flex items-center justify-center w-full max-w-4xl relative">
-            {/* Icône tétine à gauche */}
             <Image
               src="/Tetine.svg"
               alt="Tetine"
@@ -227,7 +228,6 @@ export default function QuestionReponse({
               </div>
             </div>
 
-            {/* Icône RIP à droite */}
             <Image
               src="/rip.svg"
               alt="RIP"
@@ -240,7 +240,7 @@ export default function QuestionReponse({
         <div>
           {isLoading && (
             <div className="text-2xl animate-pulse">
-              Chargement de la première question...
+              Chargement de la prochaine question...
             </div>
           )}
 
@@ -252,17 +252,14 @@ export default function QuestionReponse({
 
           {currentQuestion && (
             <div className="flex flex-col items-center space-y-16">
-              {/* Message contextuel */}
               <div className="text-2xl italic text-gray-600 max-w-2xl text-center">
                 {currentQuestion.structuredOutput.message}
               </div>
 
-              {/* Question principale */}
               <h2 className="text-4xl font-regular text-center">
                 {currentQuestion.structuredOutput.question.text}
               </h2>
 
-              {/* Options de réponse */}
               <div className="flex flex-row gap-6">
                 {currentQuestion.structuredOutput.question.options.map(
                   (option, index) => (
