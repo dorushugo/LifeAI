@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { User } from "@/app/page";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function Sidebar({
   user,
@@ -130,6 +131,17 @@ export default function Sidebar({
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Lien vers la politique de confidentialité */}
+        <div className="mt-auto pt-8">
+          <Link
+            href="/privacy-policy"
+            target="_blank"
+            className="text-sm text-gray-400 hover:text-gray-300 hover:underline transition-colors"
+          >
+            Politique de confidentialité
+          </Link>
         </div>
       </div>
     </motion.div>

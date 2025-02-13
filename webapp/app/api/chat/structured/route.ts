@@ -294,12 +294,48 @@ const getCurrentTheme = (age: number, interactionIndex: number) => {
 // Modifier le schema des options avec des valeurs par défaut explicites
 const optionSchema = z.object({
   text: z.string().describe("Texte de l'option"),
-  healthChange: z.number().min(-100).max(50).default(0),
-  moneyChange: z.number().min(-10000).max(10000).default(0),
-  karmaChange: z.number().min(-50).max(50).default(0),
-  socialChange: z.number().min(-50).max(50).default(0),
-  psychologicalProfileChange: z.string().optional().default(""), // Default explicite
-  memoryChange: z.string().optional().default(""), // Default vide
+  healthChange: z
+    .number()
+    .min(-100)
+    .max(50)
+    .default(0)
+    .describe(
+      "Influence sur la santé, utilise les valeurs négatives pour les effets négatifs et les valeurs positives pour les effets positifs"
+    ),
+  moneyChange: z
+    .number()
+    .min(-100000)
+    .max(100000)
+    .default(0)
+    .describe(
+      "Influence sur l'argent, utilise les valeurs négatives pour les effets négatifs et les valeurs positives pour les effets positifs"
+    ),
+  karmaChange: z
+    .number()
+    .min(-50)
+    .max(50)
+    .default(0)
+    .describe(
+      "Influence sur le karma, utilise les valeurs négatives pour les effets négatifs et les valeurs positives pour les effets positifs"
+    ),
+  socialChange: z
+    .number()
+    .min(-50)
+    .max(50)
+    .default(0)
+    .describe(
+      "Influence sur la sociabilité, utilise les valeurs négatives pour les effets négatifs et les valeurs positives pour les effets positifs"
+    ),
+  psychologicalProfileChange: z
+    .string()
+    .optional()
+    .default("")
+    .describe("Nouveau trait psychologique"),
+  memoryChange: z
+    .string()
+    .optional()
+    .default("")
+    .describe("Ajout d'un évènement à la mémoire"),
 });
 
 // Modifier le schema principal :
