@@ -41,7 +41,6 @@ export default function Sidebar({
       <div className="text-center">
         <h1 className="text-[50px] text-[#F1F1F1]">
           {user?.gender === "male" ? "Roberto" : "Roberta"}{" "}
-          {user?.interactionCount}
         </h1>
 
         <p className="text-[40px] text-[#F1F1F1] -mt-[15px]">{user?.age} ans</p>
@@ -79,7 +78,7 @@ export default function Sidebar({
         {/* Nouvelle section pour afficher le profil psychologique */}
 
         <div className="mt-[61px] text-[24px] text-[#F1F1F1] pb-[12px] w-full">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col justify-start items-left mb-4">
             <p>Profil psychologique :</p>
             <button
               onClick={onOpenProfile}
@@ -90,7 +89,7 @@ export default function Sidebar({
           </div>
 
           {/* Section mémoire modifiée */}
-          <div className="flex justify-between items-center mt-6">
+          <div className="flex flex-col justify-start items-left mt-6">
             <p>Mémoires :</p>
             <button
               onClick={onOpenMemory}

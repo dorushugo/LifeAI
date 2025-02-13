@@ -1,7 +1,7 @@
 import { User } from "@/app/page";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 
 // Définition du type pour une question
@@ -47,6 +47,75 @@ type ApiResponse = {
   };
 };
 
+// Mettre à jour le style global
+<style jsx global>{`
+  @keyframes loading-wave {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  .loading-text::after {
+    content: "→";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: loading-wave 1.5s infinite ease-in-out;
+  }
+
+  @keyframes loading-slide {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  .loading-track {
+    position: relative;
+    overflow: hidden;
+    height: 2em;
+    width: 200px;
+  }
+
+  .loading-indicator {
+    position: absolute;
+    white-space: nowrap;
+    animation: loading-slide 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  }
+`}</style>;
+
+const GAMEPLAY_TIPS = [
+  "Les options extrêmes peuvent avoir des conséquences irréversibles",
+  "Chaque partie à une histoire et des choix uniques",
+  "Vos traits psychologiques se renforcent avec les choix répétés",
+  "Chaque interaction vieillit votre personnage d'un an - planifiez à long terme !",
+  "Les souvenirs accumulés débloquent des situations spéciales plus tard",
+  "Les changements de karma influencent les réactions des personnages secondaires",
+  "Alterner entre différents traits psychologiques pour plus de flexibilité",
+  "Votre âge détermine les types de défis auxquels vous faites face",
+  "Consultez régulièrement votre journal des souvenirs pour suivre votre progression",
+  "Les événements aléatoires testent votre capacité d'adaptation",
+  "Les choix d'enfance influencent vos capacités à l'âge adulte",
+  "Les compétences sociales s'améliorent avec la pratique régulière",
+  "Certains choix verrouillent des branches narratives permanentes",
+];
+
 export default function QuestionReponse({
   user,
   setUser,
@@ -55,6 +124,9 @@ export default function QuestionReponse({
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [currentRating, setCurrentRating] = useState<number>(0);
+  const [showRatingPopup, setShowRatingPopup] = useState(false);
+  const [isNextQuestionLoading, setIsNextQuestionLoading] = useState(false);
+  const [currentTip, setCurrentTip] = useState("");
 
   const {
     data: currentQuestion,
@@ -63,6 +135,7 @@ export default function QuestionReponse({
   } = useQuery<ApiResponse>({
     queryKey: ["initialQuestion", user?.interactionCount],
     queryFn: async () => {
+      setIsNextQuestionLoading(true);
       console.log(
         "Début de la requête API pour interactionCount:",
         user?.interactionCount
@@ -101,9 +174,22 @@ export default function QuestionReponse({
     },
     enabled: !!user,
     staleTime: Infinity,
+    onSettled: () => {
+      setIsNextQuestionLoading(false);
+      setLoading(false);
+    },
   });
 
+  useEffect(() => {
+    if (isLoading) {
+      setCurrentTip(
+        GAMEPLAY_TIPS[Math.floor(Math.random() * GAMEPLAY_TIPS.length)]
+      );
+    }
+  }, [isLoading]);
+
   const handleOptionClick = (option: OptionType) => {
+    setIsNextQuestionLoading(true);
     const newUser = {
       ...user,
       health: user.health + option.healthChange,
@@ -116,18 +202,22 @@ export default function QuestionReponse({
         ),
         option.psychologicalProfileChange,
       ].slice(0, 6),
-      // Ajout de la mémoire uniquement si elle n'est pas vide
       memory: [
         ...user.memory,
-        ...(option.memoryChange ? [option.memoryChange] : []),
-      ].slice(-20), // Garde les 20 dernières mémoires
+        ...(option.memoryChange
+          ? [
+              option.memoryChange +
+                " - Mémoire obtenu à l'age de " +
+                user.age +
+                " ans",
+            ]
+          : []),
+      ].slice(-20),
       interactionCount: user.interactionCount + 1,
     };
 
-    // Vieillissement tous les 5 choix
-    if (newUser.interactionCount % 5 === 0) {
-      newUser.age += 5;
-    }
+    // Vieillissement de 1 an à chaque interaction
+    newUser.age += 1;
 
     setUser(newUser);
   };
@@ -165,184 +255,226 @@ export default function QuestionReponse({
 
   return (
     <div className="flex flex-col items-center justify-between h-screen text-black bg-[#F1F1F1]">
-      <div className="absolute top-0 left-200 flex flex-row items-center justify-center">
-        <button
-          className="m-2 p-2 bg-blue-500 text-white rounded"
-          onClick={() => setUser({ ...user, age: user.age + 1 })}
-        >
-          +1 an
-        </button>
-        <button
-          className="m-2 p-2 bg-blue-500 text-white rounded"
-          onClick={() => setUser({ ...user, age: user.age + 100 })}
-        >
-          +100 ans
-        </button>
-        <button
-          className="m-2 p-2 bg-blue-500 text-white rounded"
-          onClick={() => setUser({ ...user, health: user.health + 5 })}
-        >
-          +5 Health
-        </button>
-        <button
-          className="m-2 p-2 bg-blue-500 text-white rounded"
-          onClick={() => setUser({ ...user, health: user.health - 5 })}
-        >
-          -5 Health
-        </button>
-        <button
-          className="m-2 p-2 bg-blue-500 text-white rounded"
-          onClick={() => setUser({ ...user, money: user.money + 5 })}
-        >
-          +5 Money
-        </button>
-        <button
-          className="m-2 p-2 bg-blue-500 text-white rounded"
-          onClick={() => setUser({ ...user, money: user.money - 5 })}
-        >
-          -5 Money
-        </button>
-        <button
-          className="m-2 p-2 bg-blue-500 text-white rounded"
-          onClick={() => setUser({ ...user, karma: user.karma + 5 })}
-        >
-          +5 Karma
-        </button>
-        <button
-          className="m-2 p-2 bg-blue-500 text-white rounded"
-          onClick={() =>
-            setUser({ ...user, socialSkills: user.socialSkills + 5 })
-          }
-        >
-          +5 Social Skills
-        </button>
-        <button
-          className="m-2 p-2 bg-blue-500 text-white rounded"
-          onClick={() =>
-            setUser({ ...user, socialSkills: user.socialSkills - 5 })
-          }
-        >
-          -5 Social Skills
-        </button>
-      </div>
-
-      {/* Section supérieure - Barre de progression */}
-      <div className="w-full h-[100px] mt-10 flex items-center justify-center">
-        <div className="w-full h-4 relative flex items-center justify-center">
-          <div className="flex items-center justify-center w-full max-w-4xl relative">
-            <Image
-              src="/Tetine.svg"
-              alt="Tetine"
-              width={60}
-              height={41}
-              className="absolute -left-8 z-10"
-            />
-
-            <div className="w-full mx-12">
-              <div
-                className="relative w-full"
-                style={{ paddingTop: `${(37 / 1135) * 100}%` }}
-              >
-                <Image
-                  src="/Progressbar.svg"
-                  alt="Progress bar background"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-                <div
-                  className="absolute top-1 left-[4px] bottom-1 bg-black transition-all rounded-[20px] rounded-r-none"
-                  style={{
-                    width: `${Math.min(
-                      Math.max((user.age / 100) * 100, 0),
-                      98
-                    )}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            <Image
-              src="/rip.svg"
-              alt="RIP"
-              width={59}
-              height={41}
-              className="absolute -right-8 z-10"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Section centrale - Question et texte */}
+      {/* Section centrale - Contenu dynamique */}
       <div className="flex-1 w-full flex flex-col items-center justify-center px-20">
-        {currentQuestion && (
+        {currentQuestion ? (
+          // Afficher la question si disponible
           <div className="flex flex-col items-center space-y-8">
             <div className="text-3xl italic text-gray-600 max-w-3xl text-center mb-12">
               {currentQuestion.structuredOutput.message}
             </div>
 
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-xl text-gray-600">Notez cette réponse :</p>
-              <div className="flex gap-4">
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <motion.div
-                    key={rating}
-                    className="cursor-pointer relative pb-2 border-t-0 text-2xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-16 h-16 flex items-center justify-center"
-                    variants={{
-                      initial: { paddingBottom: "15px" },
-                      hover: {
-                        scale: 1.05,
-                        transition: { type: "spring", stiffness: 300 },
-                      },
-                    }}
-                    initial="initial"
-                    whileHover="hover"
-                    onClick={() => setCurrentRating(rating)}
-                  >
-                    <motion.button
-                      className={`relative w-full h-full flex items-center justify-center text-3xl rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] ${
-                        rating <= currentRating
-                          ? "bg-yellow-400"
-                          : "bg-[#F1F1F1]"
-                      }`}
-                      variants={{
-                        initial: { y: 0 },
-                        hover: {
-                          scale: 1.05,
-                          y: -5,
-                          transition: { type: "spring", stiffness: 400 },
-                        },
-                      }}
-                      whileTap={{
-                        scale: 0.95,
-                        y: 0,
-                        transition: { type: "spring", stiffness: 400 },
-                      }}
-                    >
-                      {rating <= currentRating ? "★" : "☆"}
-                    </motion.button>
-                  </motion.div>
-                ))}
+            {/* Bouton d'ouverture de la notation */}
+            <motion.button
+              onClick={() => setShowRatingPopup(true)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="relative mt-8 group"
+            >
+              <div className="absolute inset-0 bg-yellow-400 rounded-lg blur-sm group-hover:blur transition-all" />
+              <div className="relative px-6 py-3 bg-yellow-300 rounded-lg border-4 border-black flex items-center gap-2">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  className="filter pixelated"
+                  style={{ imageRendering: "pixelated" }}
+                >
+                  <path
+                    d="M12 0L15.09 7.59L24 8.78L18 14.47L19.18 24L12 20.09L4.82 24L6 14.47L0 8.78L8.91 7.59L12 0Z"
+                    fill="black"
+                  />
+                </svg>
+                <span className="text-xl font-bold">Noter la réponse</span>
               </div>
-              <button
-                disabled={!currentRating}
-                onClick={submitRating}
-                className="mt-4 p-2 bg-green-500 text-white rounded disabled:opacity-50"
-              >
-                Valider la notation
-              </button>
-            </div>
+            </motion.button>
 
-            <h2 className="text-5xl font-regular text-center leading-tight">
-              {currentQuestion.structuredOutput.question.text}
-            </h2>
+            {/* Popup de notation */}
+            {showRatingPopup && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+                onClick={() => setShowRatingPopup(false)}
+              >
+                <motion.div
+                  initial={{ y: 50 }}
+                  animate={{ y: 0 }}
+                  className="bg-[#F1F1F1] p-8 rounded-2xl border-4 border-black relative"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h3 className="text-2xl mb-6 text-center">
+                    Noter cette réponse
+                  </h3>
+
+                  <div className="flex gap-4 mb-6">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <motion.div
+                        key={rating}
+                        className="cursor-pointer relative pb-2 border-t-0 text-2xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-16 h-16 flex items-center justify-center"
+                        variants={{
+                          initial: { paddingBottom: "15px" },
+                          hover: {
+                            scale: 1.05,
+                            transition: { type: "spring", stiffness: 300 },
+                          },
+                        }}
+                        initial="initial"
+                        whileHover="hover"
+                        onClick={() => setCurrentRating(rating)}
+                      >
+                        <motion.button
+                          className={`relative w-full h-full flex items-center justify-center text-3xl rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] ${
+                            rating <= currentRating
+                              ? "bg-yellow-400"
+                              : "bg-[#F1F1F1]"
+                          }`}
+                          variants={{
+                            initial: { y: 0 },
+                            hover: {
+                              scale: 1.05,
+                              y: -5,
+                              transition: { type: "spring", stiffness: 400 },
+                            },
+                          }}
+                          whileTap={{
+                            scale: 0.95,
+                            y: 0,
+                            transition: { type: "spring", stiffness: 400 },
+                          }}
+                        >
+                          {rating <= currentRating ? "★" : "☆"}
+                        </motion.button>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <motion.button
+                    onClick={() => {
+                      submitRating();
+                      setShowRatingPopup(false);
+                    }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-full py-3 bg-yellow-300 text-black rounded-lg border-4 border-black font-bold relative pb-2 shadow-[inset_0_0_0_4px_black] before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px]"
+                    disabled={!currentRating}
+                  >
+                    <span className="relative">VALIDER LA NOTE</span>
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+            )}
+
+            <AnimatePresence mode="wait">
+              {currentQuestion && (
+                <motion.div
+                  initial={{ opacity: 0, y: 40, rotateZ: -2 }}
+                  animate={{ opacity: 1, y: 0, rotateZ: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 120, damping: 10 }}
+                  className="text-5xl font-regular text-center leading-tight"
+                >
+                  {currentQuestion.structuredOutput.question.text}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        ) : (
+          // Animation de chargement intégrée
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative h-12 w-64 overflow-hidden">
+              <motion.div
+                className="absolute left-0 top-0 flex gap-2 text-2xl font-bold"
+                initial={{ x: "-100%" }}
+                animate={{
+                  x: "100%",
+                  transition: {
+                    repeat: Infinity,
+                    duration: 1.8,
+                    ease: "anticipate",
+                  },
+                }}
+              >
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                  }}
+                >
+                  🏈
+                </motion.span>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                  }}
+                >
+                  💰
+                </motion.span>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                    delay: 0.2,
+                  }}
+                >
+                  ⚡
+                </motion.span>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                    delay: 0.4,
+                  }}
+                >
+                  🕹️
+                </motion.span>
+              </motion.div>
+            </div>
+            <motion.span
+              className="text-xl font-medium text-gray-600 max-w-2xl text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {currentTip}
+            </motion.span>
           </div>
         )}
       </div>
 
-      {/* Section inférieure - Réponses */}
-      <div className="w-full flex items-start justify-center px-20 pb-20">
-        {currentQuestion && (
+      {/* Section inférieure - Réponses (seulement si question disponible) */}
+      {currentQuestion && (
+        <div className="w-full flex items-start justify-center px-20 pb-20">
           <div className="flex flex-row gap-8">
             {currentQuestion.structuredOutput.question.options.map(
               (option, index) => (
@@ -389,8 +521,8 @@ export default function QuestionReponse({
               )
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

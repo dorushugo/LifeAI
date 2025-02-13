@@ -294,10 +294,10 @@ const getCurrentTheme = (age: number, interactionIndex: number) => {
 // Modifier le schema des options avec des valeurs par défaut explicites
 const optionSchema = z.object({
   text: z.string().describe("Texte de l'option"),
-  healthChange: z.number().min(-100).max(100).default(0),
-  moneyChange: z.number().min(-100).max(100).default(0),
-  karmaChange: z.number().min(-100).max(100).default(0),
-  socialChange: z.number().min(-100).max(100).default(0),
+  healthChange: z.number().min(-100).max(50).default(0),
+  moneyChange: z.number().min(-10000).max(10000).default(0),
+  karmaChange: z.number().min(-50).max(50).default(0),
+  socialChange: z.number().min(-50).max(50).default(0),
   psychologicalProfileChange: z.string().optional().default(""), // Default explicite
   memoryChange: z.string().optional().default(""), // Default vide
 });
@@ -812,10 +812,10 @@ export async function POST(req: Request) {
         text: validatedData.question.text,
         options: validatedData.question.options.map((option) => ({
           text: option.text.substring(0, 200), // Limiter la longueur
-          healthChange: Math.min(Math.max(option.healthChange, -5), 5),
-          moneyChange: Math.min(Math.max(option.moneyChange, -5), 5),
-          karmaChange: Math.min(Math.max(option.karmaChange, -5), 5),
-          socialChange: Math.min(Math.max(option.socialChange, -5), 5),
+          healthChange: Math.min(Math.max(option.healthChange, -100), 100),
+          moneyChange: Math.min(Math.max(option.moneyChange, -10000), 10000),
+          karmaChange: Math.min(Math.max(option.karmaChange, -50), 50),
+          socialChange: Math.min(Math.max(option.socialChange, -50), 50),
           psychologicalProfileChange:
             option.psychologicalProfileChange?.substring(0, 20) || "Neutre",
           memoryChange:

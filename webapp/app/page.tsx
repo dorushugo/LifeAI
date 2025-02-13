@@ -38,7 +38,7 @@ const PopupModal = ({
   items: string[];
   onClose: () => void;
 }) => (
-  <div className="fixed inset-0 flex max-w-xl items-center justify-center bg-black bg-opacity-50 z-[9999]">
+  <div className="fixed right-0 flex max-w-xl items-center justify-center h-full bg-black bg-opacity z-[9999]">
     <div className="bg-dark p-8 h-full max-w-2xl w-[90%] max-h-[80vh] overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold text-white">{title}</h2>
@@ -102,8 +102,8 @@ export default function Home() {
           health: Math.max(0, Math.min(100, newUser.health)),
           karma: Math.max(-100, Math.min(100, newUser.karma)),
           age: Math.max(0, Math.min(100, newUser.age)),
-          money: Math.max(0, Math.min(10000000000, newUser.money)),
-          socialSkills: Math.max(0, Math.min(100, newUser.socialSkills)),
+          money: Math.max(-100000000000, Math.min(10000000000, newUser.money)),
+          socialSkills: Math.max(-100, Math.min(100, newUser.socialSkills)),
         };
       }
       return newUser;
