@@ -67,7 +67,7 @@ export default function Home() {
   const [user, setUser] = useState<User | null>({
     gender: "",
     name: "",
-    age: 99,
+    age: 0,
     money: 0,
     health: 100,
     karma: 0,
