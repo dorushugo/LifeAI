@@ -4,7 +4,6 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ChatProvider } from "./context/ChatContext";
 
-import { TooltipProvider } from "@/components/ui/tooltip";
 import ReactQueryProvider from "../providers/ReactQueryProvider";
 
 // je veux utiliser la police Pixelify Sans venant de google font
@@ -29,30 +28,28 @@ export default async function RootLayout({
         className={`${pixelifySans.variable} antialiased` + "flex flex-row"}
       >
         <ChatProvider>
-          <TooltipProvider>
-            <ReactQueryProvider>
-              <Toaster
-                position="bottom-right"
-                toastOptions={{
-                  style: {
-                    background: "#faf6f1",
-                    color: "#4a3427",
-                    border: "1px solid #e6d5c3",
+          <ReactQueryProvider>
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: "#faf6f1",
+                  color: "#4a3427",
+                  border: "1px solid #e6d5c3",
+                },
+                success: {
+                  iconTheme: {
+                    primary: "#b85c38",
+                    secondary: "#fff",
                   },
-                  success: {
-                    iconTheme: {
-                      primary: "#b85c38",
-                      secondary: "#fff",
-                    },
-                  },
-                }}
-              />
-              <div className="flex flex-row w-full">
-                {/* Sidebar */}
-                <div className="flex-1 ">{children}</div>
-              </div>
-            </ReactQueryProvider>
-          </TooltipProvider>
+                },
+              }}
+            />
+            <div className="flex flex-row w-full">
+              {/* Sidebar */}
+              <div className="flex-1 ">{children}</div>
+            </div>
+          </ReactQueryProvider>
         </ChatProvider>
       </body>
     </html>
