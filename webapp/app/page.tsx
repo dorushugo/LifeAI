@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import GenderChoice from "@/app/components/GenderChoice";
-import Chat from "@/app/components/chat";
 import QuestionReponse from "@/app/components/QuestionReponse";
 import { motion } from "framer-motion";
 import Sidebar from "@/app/components/Sidebar";
@@ -68,7 +67,7 @@ export default function Home() {
   const [user, setUser] = useState<User | null>({
     gender: "",
     name: "",
-    age: 15,
+    age: 99,
     money: 0,
     health: 100,
     karma: 0,

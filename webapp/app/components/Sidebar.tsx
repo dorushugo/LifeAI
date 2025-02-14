@@ -105,6 +105,12 @@ export default function Sidebar({
                   {user?.karma}
                 </span>
               </li>
+              <li className="flex items-center space-x-2">
+                <Image src="/Cerveau.svg" alt="Karma" width={33} height={33} />
+                <span className="text-[16px] font-mono font-bold">
+                  {user?.QI}
+                </span>
+              </li>
             </ul>
           </div>
           {/* Nouvelle section pour afficher le profil psychologique */}
