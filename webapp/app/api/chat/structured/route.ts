@@ -1,14 +1,15 @@
 import { z } from "zod";
 import { generateObject } from "ai";
 import { NextResponse } from "next/server";
-
-import { createOllama } from "ollama-ai-provider";
+ 
+import { createOpenAI } from "@ai-sdk/openai";
+ 
 import { User } from "@/app/page";
-
-const ollama = createOllama({
-  baseURL: "http://localhost:11434/api",
+ 
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
-
+ 
 // Modifier le schema des options avec des valeurs par défaut explicites
 const optionSchema = z.object({
   text: z.string().describe("Texte de l'option"),
@@ -55,7 +56,7 @@ const optionSchema = z.object({
     .default("")
     .describe("Ajout d'un évènement à la mémoire"),
 });
-
+ 
 // Modifier le schema principal :
 const mainSchema = z.object({
   message: z.string().describe("Message contextuel"),
@@ -64,13 +65,13 @@ const mainSchema = z.object({
     options: z.array(optionSchema).length(2),
   }),
 });
-
+ 
 // ================= GENERATEURS INDIVIDUELS =================
-
+ 
 const generateKarmaPrompt = (user: User): string => {
   const karma = user.karma;
   let prompt = `\n\n## INFLUENCE KARMA (${karma}/100)\n`;
-
+ 
   if (karma < -10) {
     prompt +=
       `INFORMATION: L'utilisateur à un score de karma négatif, il est donc plus susceptible pour toi de lui proposer des choix illégaux, des pièges ou des options risquées.\n` +
@@ -90,14 +91,14 @@ const generateKarmaPrompt = (user: User): string => {
   } else {
     prompt += `INFORMATION: L'utilisateur à un score de karma neutre, il est donc plus susceptible pour toi de lui proposer des choix légaux et illégaux, des options éthiques ou pas éthiques, des options qui lui permettent de gagner du karma ou des options qui lui permettent de perdre du karma afin de rendre le jeu plus intéressant et faire évoluer son karma dans les deux sens.\n`;
   }
-
+ 
   return prompt;
 };
-
+ 
 const generateMoneyPrompt = (user: User): string => {
   const money = user.money;
   let prompt = `\n\n## INFLUENCE ARGENT (${money}€)\n`;
-
+ 
   if (money < 0) {
     prompt +=
       `INFORMATION: L'utilisateur est endetté\n` +
@@ -116,14 +117,14 @@ const generateMoneyPrompt = (user: User): string => {
       `DIRECTIVES:\n` +
       `- Maintenir des options équilibrées\n`;
   }
-
+ 
   return prompt;
 };
-
+ 
 const generateHealthPrompt = (user: User): string => {
   const health = user.health;
   let prompt = `\n\n## INFLUENCE SANTÉ (${health}/100)\n`;
-
+ 
   if (health < 50) {
     prompt +=
       `INFORMATION: Santé critique\n` +
@@ -141,10 +142,10 @@ const generateHealthPrompt = (user: User): string => {
       `DIRECTIVES:\n` +
       `- Lier santé mentale et physique\n`;
   }
-
+ 
   return prompt;
 };
-
+ 
 const generateAgePrompt = (user: User): string => {
   const age = user.age;
   let prompt = `\n\n## Le joueur a ${age} ans\n`;
@@ -173,14 +174,14 @@ const generateAgePrompt = (user: User): string => {
       `- Augmenter progressivement les enjeux\n` +
       `- Développer positivement ou négativement les thèmes comme la famille, l'amour, les amis\n`;
   }
-
+ 
   return prompt;
 };
-
+ 
 const generateSocialPrompt = (user: User): string => {
   const social = user.socialSkills;
   let prompt = `\n\n## INFLUENCE SOCIALE (${social}/100)\n`;
-
+ 
   if (social < 30) {
     prompt +=
       `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Compétences sociales faibles\n` +
@@ -205,17 +206,17 @@ const generateSocialPrompt = (user: User): string => {
       `DIRECTIVES:\n` +
       `- Maintenir un équilibre relations/vie privée\n`;
   }
-
+ 
   return prompt;
 };
-
+ 
 const generatePsychologyPrompt = (user: User): string => {
   const traits = user.psychologicalProfile;
   console.log("traits", traits);
   let prompt = `\n\n## INFLUENCE PSYCHOLOGIE (${
     traits.join(", ") || "Aucun"
   })\n`;
-
+ 
   if (traits.length === 0) {
     prompt +=
       `INFORMATION SUR LES TRAITS DU JOUEUR: Aucun trait dominant\n` +
@@ -229,14 +230,14 @@ const generatePsychologyPrompt = (user: User): string => {
       `- Renforcer 1 trait existant par option\n` +
       `- Créer des conflits entre traits\n`;
   }
-
+ 
   return prompt;
 };
-
+ 
 const generateMemoryPrompt = (user: User): string => {
   const memory = user.memory;
   let prompt = `\n\n## INFLUENCE MEMOIRE\n`;
-
+ 
   if (memory.length === 0) {
     prompt +=
       `INFORMATION SUR LE PASSÉ DU JOUEUR: Aucune mémoire particulière\n` +
@@ -253,10 +254,10 @@ const generateMemoryPrompt = (user: User): string => {
       `- À chaque option, tu ajoutes un événement en rapport avec le choix\n` +
       `EXEMPLE: Si le joueur crée une entreprise ou une famille, tu ajoute dans la mémoire du joueur "Création d'une entreprise" ou "Mariage" en fonction du choix`;
   }
-
+ 
   return prompt;
 };
-
+ 
 const generateSchemaRequirements = (): string => {
   return (
     `\n\n## RÈGLES DE GÉNÉRATION DE LA RÉPONSE\n` +
@@ -278,16 +279,16 @@ const generateSchemaRequirements = (): string => {
       }`
   );
 };
-
+ 
 // ================= FONCTIONS SIMILAIRES POUR =================
 // generateHealthPrompt(), generateAgePrompt(), generateSocialPrompt(),
 // generatePsychologyPrompt()...
-
+ 
 // ================= COMBINAISON FINALE =================
-
+ 
 export const buildMasterPrompt = (user: User): string => {
   let prompt = `ROLE: Tu es un assistant narratif dans un jeu de simulation de vie où le joueur prend des décisions influençant son destin.
-
+ 
 **Règles :**
 - Décris une situation immersive en fonction de l'âge du joueur.
 - Propose **2 choix**, chacun ayant un impact sur les statistiques du joueur (santé, argent, karma, social, psychologie).
@@ -301,7 +302,7 @@ export const buildMasterPrompt = (user: User): string => {
 - Pas de retour en arrière possible après un choix.
 - Quand tu introduis des personnages secondaires, introduit leur nom et prend soin de le conserver dans la mémoire du joueur.
 - Le joueur meurt si il passe en dessous de 0 points de santé, son karma peut aller de -100 à +100, son argent peut aller de -10000000000 à +10000000000, son indice de sociabilité peut aller de -100 à +100.
-
+ 
 **Exemple pour un joueur de 10 ans :**
 {
   "message": "Un camarade de classe organise une grande fête ce week-end. Tout le monde en parle ! Tu hésites sur quoi faire...",
@@ -329,7 +330,7 @@ export const buildMasterPrompt = (user: User): string => {
     ]
   }
 }`;
-
+ 
   if (user.age < 15) {
     // Mode enfant : focus sur la personnalité
     prompt += `## NOUS SOMMES DANS LE MODE ENFANCE, le personnage du joueur à qui tu t'adresse a ${user.age} ans,n`;
@@ -337,15 +338,15 @@ export const buildMasterPrompt = (user: User): string => {
     prompt += `- Ignorer toutes les stats sauf l'âge et les traits psychologiques\n`;
     prompt += `- Générer des options influençant uniquement le profil psychologique\n`;
     prompt += `- Thèmes: éducation, amitiés, découvertes\n\n`;
-
+ 
     prompt += generateAgePrompt(user);
     prompt += generatePsychologyPrompt(user);
-
+ 
     prompt += generateSchemaRequirements();
-
+ 
     return prompt;
   }
-
+ 
   // Mode normal pour 15+ ans
   prompt += generateKarmaPrompt(user);
   prompt += generateMoneyPrompt(user);
@@ -355,10 +356,10 @@ export const buildMasterPrompt = (user: User): string => {
   prompt += generatePsychologyPrompt(user);
   prompt += generateMemoryPrompt(user);
   prompt += generateSchemaRequirements();
-
+ 
   return prompt;
 };
-
+ 
 // Ajouter une fonction de validation renforcée
 const validateResponse = (data: unknown) => {
   const result = mainSchema.safeParse(data);
@@ -368,12 +369,12 @@ const validateResponse = (data: unknown) => {
   }
   return result.data;
 };
-
+ 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const gameState = body.gameState;
-
+ 
     // Création de l'objet user basé sur le schéma
     const user: User = {
       age: gameState.age,
@@ -390,13 +391,13 @@ export async function POST(req: Request) {
       QI: gameState.QI,
       memory: gameState.memory,
     };
-
+ 
     const generatedPrompt =
       buildMasterPrompt(user) +
       `
     
     Règles de réponse :
-
+ 
     1. Respecte le format de réponse STRICTE donnée dans cet exemple:
     {
       "message": "Contexte de la décision",
@@ -422,24 +423,24 @@ export async function POST(req: Request) {
         }
       }
     }`;
-
+ 
     // Log complet en dev seulement
     if (process.env.NODE_ENV === "development") {
       console.log("\n======= PROMPT COMPLET =======\n");
       console.log(generatedPrompt);
       console.log("\n==============================\n");
     }
-
+ 
     const result = await generateObject({
-      model: ollama("llama3.1"),
+      model: openai("gpt-4o-mini"),
       prompt: generatedPrompt,
       schema: mainSchema,
       temperature: 0.9, // Réduire encore la créativité
     });
-
+ 
     // Validation stricte
     const validatedData = validateResponse(result.object);
-
+ 
     // Post-traitement garantissant les valeurs
     const structuredOutput = {
       message: validatedData.message,
@@ -461,7 +462,7 @@ export async function POST(req: Request) {
         })),
       },
     };
-
+ 
     return NextResponse.json({ structuredOutput });
   } catch (error) {
     console.error("\n======= ERREUR =======");
@@ -469,7 +470,7 @@ export async function POST(req: Request) {
     console.error("Stack:", error instanceof Error ? error.stack : "N/A");
     console.error("Requête:", req.headers);
     console.error("========================\n");
-
+ 
     return NextResponse.json(
       { error: "Erreur interne du serveur" },
       { status: 500 }
