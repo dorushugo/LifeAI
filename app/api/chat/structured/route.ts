@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { generateObject } from "ai";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 import { createOpenAI } from "@ai-sdk/openai";
 
@@ -369,7 +369,7 @@ const validateResponse = (data: unknown) => {
   return result.data;
 };
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const body = await req.json();
     const gameState = body.gameState;
