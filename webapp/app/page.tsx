@@ -50,7 +50,7 @@ const PopupModal = ({
         </button>
       </div>
       <ul className="space-y-4">
-        {items.reverse().map((item, index) => (
+        {items.map((item, index) => (
           <li key={index} className="text-xl text-white">
             • {item}
           </li>

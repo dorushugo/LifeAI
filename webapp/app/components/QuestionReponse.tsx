@@ -259,303 +259,187 @@ export default function QuestionReponse({
 
   return (
     <div className="flex flex-col items-center justify-between h-screen text-black bg-[#F1F1F1]">
+      {/* Section d'erreur intégrée */}
       {hasError && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <motion.div
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            className="bg-white p-8 rounded-xl text-center space-y-6"
-          >
-            <h2 className="text-3xl font-bold text-red-600">
-              Erreur de connexion
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full bg-red-100 p-6 text-center shadow-lg"
+        >
+          <div className="max-w-2xl mx-auto space-y-4">
+            <h2 className="text-2xl font-bold text-red-600 flex items-center justify-center gap-2">
+              <motion.span
+                animate={{ rotate: [0, -10, 10, 0] }}
+                transition={{ repeat: Infinity, duration: 0.8 }}
+              >
+                ⚠️
+              </motion.span>
+              Problème de connexion au serveur
             </h2>
-
             <motion.button
               onClick={handleRetry}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 mx-auto"
-              disabled={isNextQuestionLoading}
+              className="bg-red-500 text-white px-6 py-2 rounded-lg font-medium flex items-center gap-2 mx-auto"
             >
-              {isNextQuestionLoading ? (
-                <>
-                  <motion.span
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  >
-                    🔄
-                  </motion.span>
-                  Tentative de reconnexion...
-                </>
-              ) : (
-                "Réessayer maintenant"
-              )}
+              <motion.span
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                🔄
+              </motion.span>
+              Réessayer
             </motion.button>
-
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-red-700">
               Code d'erreur: {(error as any)?.code || "UNKNOWN"}
             </p>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
       )}
 
-      {!hasError && (
-        <>
-          {isNextQuestionLoading && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white p-8 rounded-xl text-center space-y-4">
-                <div className="loading-track">
-                  <motion.div
-                    className="loading-indicator"
-                    initial={{ x: "-100%" }}
-                    animate={{ x: "100%" }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                  >
-                    ⚡ Chargement en cours...
-                  </motion.div>
-                </div>
-                <button
-                  onClick={() => {
-                    setHasError(true);
-                    setIsNextQuestionLoading(false);
-                  }}
-                  className="text-red-500 underline text-sm"
-                >
-                  Annuler le chargement
-                </button>
-              </div>
-            </div>
-          )}
-          <div className="flex-1 w-full flex flex-col items-center justify-center px-4 md:px-20">
-            {currentQuestion ? (
-              <div className="flex flex-col items-center space-y-8">
-                <div className="text-3xl italic text-gray-600 max-w-3xl text-center mb-12">
-                  {currentQuestion.structuredOutput?.message}
-                </div>
-
-                <motion.button
-                  onClick={() => setShowRatingPopup(true)}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="relative mt-8 group"
-                >
-                  <div className="absolute inset-0 bg-yellow-400 rounded-lg blur-sm group-hover:blur transition-all" />
-                  <div className="relative px-6 py-3 bg-yellow-300 rounded-lg border-4 border-black flex items-center gap-2">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      className="filter pixelated"
-                      style={{ imageRendering: "pixelated" }}
-                    >
-                      <path
-                        d="M12 0L15.09 7.59L24 8.78L18 14.47L19.18 24L12 20.09L4.82 24L6 14.47L0 8.78L8.91 7.59L12 0Z"
-                        fill="black"
-                      />
-                    </svg>
-                    <span className="text-xl font-bold">Noter la réponse</span>
-                  </div>
-                </motion.button>
-
-                {showRatingPopup && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.5 }}
-                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-                    onClick={() => setShowRatingPopup(false)}
-                  >
-                    <motion.div
-                      initial={{ y: 50 }}
-                      animate={{ y: 0 }}
-                      className="bg-[#F1F1F1] p-8 rounded-2xl border-4 border-black relative"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <h3 className="text-2xl mb-6 text-center">
-                        Noter cette réponse
-                      </h3>
-
-                      <div className="flex gap-4 mb-6">
-                        {[1, 2, 3, 4, 5].map((rating) => (
-                          <motion.div
-                            key={rating}
-                            className="cursor-pointer relative pb-2 border-t-0 text-2xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-16 h-16 flex items-center justify-center"
-                            variants={{
-                              initial: { paddingBottom: "15px" },
-                              hover: {
-                                scale: 1.05,
-                                transition: { type: "spring", stiffness: 300 },
-                              },
-                            }}
-                            initial="initial"
-                            whileHover="hover"
-                            onClick={() => setCurrentRating(rating)}
-                          >
-                            <motion.button
-                              className={`relative w-full h-full flex items-center justify-center text-3xl rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] ${
-                                rating <= currentRating
-                                  ? "bg-yellow-400"
-                                  : "bg-[#F1F1F1]"
-                              }`}
-                              variants={{
-                                initial: { y: 0 },
-                                hover: {
-                                  scale: 1.05,
-                                  y: -5,
-                                  transition: {
-                                    type: "spring",
-                                    stiffness: 400,
-                                  },
-                                },
-                              }}
-                              whileTap={{
-                                scale: 0.95,
-                                y: 0,
-                                transition: { type: "spring", stiffness: 400 },
-                              }}
-                            >
-                              {rating <= currentRating ? "★" : "☆"}
-                            </motion.button>
-                          </motion.div>
-                        ))}
-                      </div>
-
-                      <motion.button
-                        onClick={() => {
-                          submitRating();
-                          setShowRatingPopup(false);
-                        }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="w-full py-3 bg-yellow-300 text-black rounded-lg border-4 border-black font-bold relative pb-2 shadow-[inset_0_0_0_4px_black] before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px]"
-                        disabled={!currentRating}
-                      >
-                        <span className="relative">VALIDER LA NOTE</span>
-                      </motion.button>
-                    </motion.div>
-                  </motion.div>
-                )}
-
-                {currentQuestion.structuredOutput?.question?.text && (
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      initial={{ opacity: 0, y: 40, rotateZ: -2 }}
-                      animate={{ opacity: 1, y: 0, rotateZ: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 120,
-                        damping: 10,
-                      }}
-                      className="text-5xl font-regular text-center leading-tight"
-                    >
-                      {currentQuestion.structuredOutput.question.text}
-                    </motion.div>
-                  </AnimatePresence>
-                )}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-4">
-                <div className="relative h-12 w-64 overflow-hidden">
-                  <motion.div
-                    className="absolute left-0 top-0 flex gap-2 text-2xl font-bold"
-                    initial={{ x: "-100%" }}
-                    animate={{
-                      x: "100%",
-                      transition: {
-                        repeat: Infinity,
-                        duration: 1.8,
-                        ease: "anticipate",
-                      },
-                    }}
-                  >
-                    <motion.span
-                      className="block"
-                      initial={{ opacity: 0 }}
-                      animate={{
-                        opacity: [0, 1, 0],
-                        scale: [0.8, 1.2, 0.8],
-                      }}
-                      transition={{
-                        duration: 1.8,
-                        repeat: Infinity,
-                        times: [0, 0.5, 1],
-                      }}
-                    >
-                      🏈
-                    </motion.span>
-                    <motion.span
-                      className="block"
-                      initial={{ opacity: 0 }}
-                      animate={{
-                        opacity: [0, 1, 0],
-                        scale: [0.8, 1.2, 0.8],
-                      }}
-                      transition={{
-                        duration: 1.8,
-                        repeat: Infinity,
-                        times: [0, 0.5, 1],
-                      }}
-                    >
-                      💰
-                    </motion.span>
-                    <motion.span
-                      className="block"
-                      initial={{ opacity: 0 }}
-                      animate={{
-                        opacity: [0, 1, 0],
-                        scale: [0.8, 1.2, 0.8],
-                      }}
-                      transition={{
-                        duration: 1.8,
-                        repeat: Infinity,
-                        times: [0, 0.5, 1],
-                        delay: 0.2,
-                      }}
-                    >
-                      ⚡
-                    </motion.span>
-                    <motion.span
-                      className="block"
-                      initial={{ opacity: 0 }}
-                      animate={{
-                        opacity: [0, 1, 0],
-                        scale: [0.8, 1.2, 0.8],
-                      }}
-                      transition={{
-                        duration: 1.8,
-                        repeat: Infinity,
-                        times: [0, 0.5, 1],
-                        delay: 0.4,
-                      }}
-                    >
-                      🕹️
-                    </motion.span>
-                  </motion.div>
-                </div>
+      {/* Contenu principal */}
+      <div className="flex-1 w-full flex flex-col items-center justify-center px-4 md:px-20">
+        {isNextQuestionLoading ? (
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative h-12 w-64 overflow-hidden">
+              <motion.div
+                className="absolute left-0 top-0 flex gap-2 text-2xl font-bold"
+                initial={{ x: "-100%" }}
+                animate={{
+                  x: "100%",
+                  transition: {
+                    repeat: Infinity,
+                    duration: 1.8,
+                    ease: "anticipate",
+                  },
+                }}
+              >
                 <motion.span
-                  className="text-xl font-medium text-gray-600 max-w-2xl text-center"
+                  className="block"
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                  }}
                 >
-                  {currentTip}
+                  🏈
                 </motion.span>
-              </div>
-            )}
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                  }}
+                >
+                  💰
+                </motion.span>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                    delay: 0.2,
+                  }}
+                >
+                  ⚡
+                </motion.span>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                    delay: 0.4,
+                  }}
+                >
+                  🕹️
+                </motion.span>
+              </motion.div>
+            </div>
+            <motion.span
+              className="text-xl font-medium text-gray-600 max-w-2xl text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {currentTip}
+            </motion.span>
           </div>
+        ) : currentQuestion?.structuredOutput ? (
+          <div className="flex flex-col items-center space-y-8">
+            <div className="text-3xl italic text-gray-600 max-w-3xl text-center mb-12">
+              {currentQuestion.structuredOutput?.message}
+            </div>
 
-          {currentQuestion?.structuredOutput?.question?.options && (
-            <div className="w-full flex items-start justify-center px-4 md:px-20 pb-8 md:pb-20">
-              <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 w-full max-w-4xl">
-                {currentQuestion.structuredOutput.question.options.map(
-                  (option, index) => (
-                    <motion.div
-                      key={index}
-                      className="w-full md:w-[320px] h-full flex justify-center items-center"
-                    >
+            <motion.button
+              onClick={() => setShowRatingPopup(true)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="relative mt-8 group"
+            >
+              <div className="absolute inset-0 bg-yellow-400 rounded-lg blur-sm group-hover:blur transition-all" />
+              <div className="relative px-6 py-3 bg-yellow-300 rounded-lg border-4 border-black flex items-center gap-2">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  className="filter pixelated"
+                  style={{ imageRendering: "pixelated" }}
+                >
+                  <path
+                    d="M12 0L15.09 7.59L24 8.78L18 14.47L19.18 24L12 20.09L4.82 24L6 14.47L0 8.78L8.91 7.59L12 0Z"
+                    fill="black"
+                  />
+                </svg>
+                <span className="text-xl font-bold">Noter la réponse</span>
+              </div>
+            </motion.button>
+
+            {showRatingPopup && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+                onClick={() => setShowRatingPopup(false)}
+              >
+                <motion.div
+                  initial={{ y: 50 }}
+                  animate={{ y: 0 }}
+                  className="bg-[#F1F1F1] p-8 rounded-2xl border-4 border-black relative"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h3 className="text-2xl mb-6 text-center">
+                    Noter cette réponse
+                  </h3>
+
+                  <div className="flex gap-4 mb-6">
+                    {[1, 2, 3, 4, 5].map((rating) => (
                       <motion.div
-                        className="cursor-pointer h-full relative pb-2 border-t-0 text-2xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-[320px] flex flex-col"
+                        key={rating}
+                        className="cursor-pointer relative pb-2 border-t-0 text-2xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-16 h-16 flex items-center justify-center"
                         variants={{
                           initial: { paddingBottom: "15px" },
                           hover: {
@@ -565,16 +449,23 @@ export default function QuestionReponse({
                         }}
                         initial="initial"
                         whileHover="hover"
-                        onClick={() => handleOptionClick(option)}
+                        onClick={() => setCurrentRating(rating)}
                       >
                         <motion.button
-                          className="relative w-full h-full flex-1 py-2 px-6 text-xl text-black rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#F1F1F1] before:rounded-[20px] break-words flex items-center justify-center min-h-[150px] md:min-h-[200px]"
+                          className={`relative w-full h-full flex items-center justify-center text-3xl rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] ${
+                            rating <= currentRating
+                              ? "bg-yellow-400"
+                              : "bg-[#F1F1F1]"
+                          }`}
                           variants={{
                             initial: { y: 0 },
                             hover: {
                               scale: 1.05,
                               y: -5,
-                              transition: { type: "spring", stiffness: 400 },
+                              transition: {
+                                type: "spring",
+                                stiffness: 400,
+                              },
                             },
                           }}
                           whileTap={{
@@ -583,23 +474,264 @@ export default function QuestionReponse({
                             transition: { type: "spring", stiffness: 400 },
                           }}
                         >
-                          <span className="text-center px-2 h-full flex flex-col items-center justify-center">
-                            {option.text}
-                            <br />
-                            <span className="text-sm text-gray-600">
-                              (Santé: {option.healthChange}, Argent:{" "}
-                              {option.moneyChange}, Karma: {option.karmaChange})
-                            </span>
-                          </span>
+                          {rating <= currentRating ? "★" : "☆"}
                         </motion.button>
                       </motion.div>
-                    </motion.div>
-                  )
-                )}
-              </div>
+                    ))}
+                  </div>
+
+                  <motion.button
+                    onClick={() => {
+                      submitRating();
+                      setShowRatingPopup(false);
+                    }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-full py-3 bg-yellow-300 text-black rounded-lg border-4 border-black font-bold relative pb-2 shadow-[inset_0_0_0_4px_black] before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px]"
+                    disabled={!currentRating}
+                  >
+                    <span className="relative">VALIDER LA NOTE</span>
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+            )}
+
+            {currentQuestion.structuredOutput?.question?.text && (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  initial={{ opacity: 0, y: 40, rotateZ: -2 }}
+                  animate={{ opacity: 1, y: 0, rotateZ: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 120,
+                    damping: 10,
+                  }}
+                  className="text-5xl font-regular text-center leading-tight"
+                >
+                  {currentQuestion.structuredOutput.question.text}
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative h-12 w-64 overflow-hidden">
+              <motion.div
+                className="absolute left-0 top-0 flex gap-2 text-2xl font-bold"
+                initial={{ x: "-100%" }}
+                animate={{
+                  x: "100%",
+                  transition: {
+                    repeat: Infinity,
+                    duration: 1.8,
+                    ease: "anticipate",
+                  },
+                }}
+              >
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                  }}
+                >
+                  🏈
+                </motion.span>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                  }}
+                >
+                  💰
+                </motion.span>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                    delay: 0.2,
+                  }}
+                >
+                  ⚡
+                </motion.span>
+                <motion.span
+                  className="block"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0.8, 1.2, 0.8],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    times: [0, 0.5, 1],
+                    delay: 0.4,
+                  }}
+                >
+                  🕹️
+                </motion.span>
+              </motion.div>
             </div>
-          )}
-        </>
+            <motion.span
+              className="text-xl font-medium text-gray-600 max-w-2xl text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {currentTip}
+            </motion.span>
+          </div>
+        )}
+      </div>
+
+      {/* Popup de notation (conservée telle quelle) */}
+      {showRatingPopup && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.5 }}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setShowRatingPopup(false)}
+        >
+          <motion.div
+            initial={{ y: 50 }}
+            animate={{ y: 0 }}
+            className="bg-[#F1F1F1] p-8 rounded-2xl border-4 border-black relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-2xl mb-6 text-center">Noter cette réponse</h3>
+
+            <div className="flex gap-4 mb-6">
+              {[1, 2, 3, 4, 5].map((rating) => (
+                <motion.div
+                  key={rating}
+                  className="cursor-pointer relative pb-2 border-t-0 text-2xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-16 h-16 flex items-center justify-center"
+                  variants={{
+                    initial: { paddingBottom: "15px" },
+                    hover: {
+                      scale: 1.05,
+                      transition: { type: "spring", stiffness: 300 },
+                    },
+                  }}
+                  initial="initial"
+                  whileHover="hover"
+                  onClick={() => setCurrentRating(rating)}
+                >
+                  <motion.button
+                    className={`relative w-full h-full flex items-center justify-center text-3xl rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] ${
+                      rating <= currentRating ? "bg-yellow-400" : "bg-[#F1F1F1]"
+                    }`}
+                    variants={{
+                      initial: { y: 0 },
+                      hover: {
+                        scale: 1.05,
+                        y: -5,
+                        transition: { type: "spring", stiffness: 400 },
+                      },
+                    }}
+                    whileTap={{
+                      scale: 0.95,
+                      y: 0,
+                      transition: { type: "spring", stiffness: 400 },
+                    }}
+                  >
+                    {rating <= currentRating ? "★" : "☆"}
+                  </motion.button>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.button
+              onClick={() => {
+                submitRating();
+                setShowRatingPopup(false);
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full py-3 bg-yellow-300 text-black rounded-lg border-4 border-black font-bold relative pb-2 shadow-[inset_0_0_0_4px_black] before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px]"
+              disabled={!currentRating}
+            >
+              <span className="relative">VALIDER LA NOTE</span>
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Options de réponse */}
+      {!hasError && currentQuestion?.structuredOutput?.question?.options && (
+        <div className="w-full flex items-start justify-center px-4 md:px-20 pb-8 md:pb-20">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 w-full max-w-4xl">
+            {currentQuestion.structuredOutput.question.options.map(
+              (option, index) => (
+                <motion.div
+                  key={index}
+                  className="w-full md:w-[320px] h-full flex justify-center items-center"
+                >
+                  <motion.div
+                    className="cursor-pointer h-full relative pb-2 border-t-0 text-2xl text-black rounded-[20px] shadow-[inset_0_0_0_4px_black] transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 before:rounded-[20px] active:translate-y-[15px] active:before:translate-y-0 w-[320px] flex flex-col"
+                    variants={{
+                      initial: { paddingBottom: "15px" },
+                      hover: {
+                        scale: 1.05,
+                        transition: { type: "spring", stiffness: 300 },
+                      },
+                    }}
+                    initial="initial"
+                    whileHover="hover"
+                    onClick={() => handleOptionClick(option)}
+                  >
+                    <motion.button
+                      className="relative w-full h-full flex-1 py-2 px-6 text-xl text-black rounded-[20px] border-4 border-black transition-colors duration-200 before:absolute before:content-[''] before:inset-0 before:translate-y-[15px] before:-z-10 bg-[#F1F1F1] before:rounded-[20px] break-words flex items-center justify-center min-h-[150px] md:min-h-[200px]"
+                      variants={{
+                        initial: { y: 0 },
+                        hover: {
+                          scale: 1.05,
+                          y: -5,
+                          transition: { type: "spring", stiffness: 400 },
+                        },
+                      }}
+                      whileTap={{
+                        scale: 0.95,
+                        y: 0,
+                        transition: { type: "spring", stiffness: 400 },
+                      }}
+                    >
+                      <span className="text-center px-2 h-full flex flex-col items-center justify-center">
+                        {option.text}
+                        <br />
+                        <span className="text-sm text-gray-600">
+                          (Santé: {option.healthChange}, Argent:{" "}
+                          {option.moneyChange}, Karma: {option.karmaChange})
+                        </span>
+                      </span>
+                    </motion.button>
+                  </motion.div>
+                </motion.div>
+              )
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

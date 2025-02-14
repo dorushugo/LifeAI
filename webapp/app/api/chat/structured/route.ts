@@ -696,7 +696,7 @@ export async function POST(req: Request) {
     }
 
     const result = await generateObject({
-      model: ollama("llama3.1"),
+      model: ollama("llama3.2:3b"),
       prompt: generatedPrompt,
       schema: mainSchema,
       temperature: 0.5, // Réduire encore la créativité
