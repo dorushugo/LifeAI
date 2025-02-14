@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         question: context,
         contexte: message,
         reponse: JSON.stringify(responses),
-        ai_model: "llama3.2:3b",
+        ai_model: "llama3.1",
         response_time: "N/A",
       },
     };

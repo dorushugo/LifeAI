@@ -10,286 +10,6 @@ const ollama = createOllama({
   baseURL: "http://localhost:11434/api",
 });
 
-// Nouvelle fonction helper pour les phases d'âge
-const getAgePhase = (age: number) => {
-  if (age < 5)
-    return {
-      instructions: `Phase Nourrisson (0-4 ans) :
-    - Apprentissage des bases (marche, langage)
-    - La scène doit être **chaleureuse, humoristique et réaliste**.
-    - Intègre des **interactions familiales naturelles** (ex: parents, frères/sœurs, amis, baby-sitter).
-    - Le choix du joueur doit être un **dilemme du quotidien d'un enfant**.
-    - Certains choix doivent avoir **des conséquences cachées**, qui influenceront **les futures étapes du jeu**
-
-
-    Exemple : Choix alimentaires, activités ludiques, création d'un cercle sociale,`,
-      example: `{
-        {
-        "text": "Aider maman à calmer ton petit frère",
-        "healthChange": 2,
-        "moneyChange": 0,
-        "karmaChange": 5,
-        "socialChange": 3,
-        "psychologicalProfileChange": "Bienveillant",
-        "memoryChange": "",
-      },
-      {
-        "text": "Demander à papa d'aller au parc jouer au ballon",
-        "healthChange": 5,
-        "moneyChange": 0,
-        "karmaChange": 1,
-        "socialChange": 4,
-        "psychologicalProfileChange": "Sportif",
-        "memoryChange":"",
-      }
-
-      }`,
-    };
-
-  if (age >= 5 && age < 9)
-    return {
-      instructions: `Phase enfance (5-10 ans) :
-- L'enfant commence à explorer son environnement social et le modèle scolaire français.
-- Les décisions sont simples mais influencent son apprentissage et ses relations.
-- Les conséquences sont temporaires mais peuvent affecter son profil psychologique.
-
-**Instructions Générales :**
-1. Génère une **scène immersive et engageante** qui correspond à un enfant de 6-10 ans.
-2. Décris l'environnement avec des **détails sensoriels et émotionnels** (ex: "la cloche sonne, la cour est remplie d'enfants qui rient").
-3. Introduis un **événement** où le joueur doit prendre une décision (ex: une invitation à un anniversaire, une dispute dans la cour, un choix d'activité après l'école).
-4. Fournis **2 choix**, chacun ayant une influence sur les variables du jeu :
-   - **Santé** (ex: choix qui favorisent ou diminuent l'énergie de l'enfant)
-   - **Argent** (ex: conséquences sur les dépenses familiales)
-   - **Karma** (ex: gentillesse, honnêteté, comportement social)
-   - **Relations sociales** (ex: renforcer une amitié, se replier sur soi-même)
-   - **Profil psychologique** (ex: développer une personnalité sociable, solitaire, créative, sportive)
-
- **Exigences Spécifiques :**
-- Évite les choix évidents **(pas de "bon" ou "mauvais" choix)**.
-- Assure-toi que chaque décision est réaliste et cohérente avec l'âge de l'enfant.
-- Ajoute un **événement aléatoire** qui pourrait surprendre le joueur (ex: un imprévu pendant la fête).
-- La sortie doit être au **format JSON**.
-        Exemple : Choix alimentaires, activités ludiques`,
-      example: `{
-            "message": "Un camarade de classe t'invite à son anniversaire...",
-            "question": {
-              "text": "Comment réagis-tu ?",
-              "options": [
-                {
-                  "text": "Accepter avec enthousiasme",
-                  "healthChange": -1,
-                  "moneyChange": -2,
-                  "karmaChange": 2,
-                  "socialChange": 3,
-                  "psychologicalProfileChange": "Sociable",
-                  "memoryChange": "Le joueur est allé à l'anniversaire de son camarade de classe à l'age de 6 ans"
-                },
-                {
-                  "text": "Préférer rester à la maison",
-                  "healthChange": 1,
-                  "moneyChange": 0, 
-                  "karmaChange": -1,
-                  "socialChange": -2,
-                  "psychologicalProfileChange": "Solitaire",
-                  "memoryChange": "Le joueur à des tendances solitaires"
-                }
-              ]
-            }
-          }`,
-    };
-
-  if (age >= 10 && age < 14)
-    return {
-      instructions: `Pré-Adolescence (11-15 ans) :
-    - Prise d'autonomie progressive
-    - Gestion du temps scolaire(qui se base sur le modèle scolaire français)/loisirs
-    - Conséquences sur 5 ans max
-    Exemple : Orientation scolaire, premiers conflits`,
-      example: `{
-      "message": "Tu dois choisir une activité extrascolaire...",
-      "question": {
-        "text": "Quelle option choisis-tu ?",
-        "options": [
-          {
-            "text": "Club de sciences",
-            "healthChange": 0,
-            "moneyChange": -1,
-            "karmaChange": 1,
-            "socialChange": 1,
-            "psychologicalProfileChange": "Intellectuel",
-            "memoryChange": "Le joueur a choisi de rejoindre le club de sciences à l'age de 12 ans"
-          },
-          {
-            "text": "Équipe sportive",
-            "healthChange": 2,
-            "moneyChange": -2,
-            "karmaChange": 0,
-            "socialChange": 2,
-            "psychologicalProfileChange": "Compétitif",
-            "memoryChange": "Le joueur a choisi de rejoindre l'équipe sportive à l'age de 12 ans"
-          }
-        ]
-      }
-    }`,
-    };
-
-  if (age >= 15 && age < 19)
-    return {
-      instructions: `Phase Adolescence (16-25 ans) :
-    - Introduit progressivement les conséquences à long terme
-    - Questions sur les études et relations sociales
-    - Permet des erreurs avec possibilité de rattrapage`,
-      example: `{
-      "message": "Tu dois choisir ton orientation professionnelle...",
-      "question": {
-        "text": "Quelle voie suits-tu ?",
-        "options": [
-          {
-            "text": "Université prestigieuse",
-            "healthChange": -3,
-            "moneyChange": -5,
-            "karmaChange": 2,
-            "socialChange": 1,
-            "psychologicalProfileChange": "Ambitieux",
-            "memoryChange": "Le joueur a choisi de rejoindre une université prestigieuse au lieu d'aller à une formation professionnelle à l'age de 16 ans"
-          },
-          {
-            "text": "Formation professionnelle",
-            "healthChange": 1,
-            "moneyChange": 2,
-            "karmaChange": -1,
-            "socialChange": 3,
-            "psychologicalProfileChange": "Pragmatique",
-            "memoryChange": "Le joueur a choisi de rejoindre une formation professionnelle au lieu d'aller à une université prestigieuse à l'age de 16 ans"
-          }
-        ]
-      }
-    }`,
-    };
-
-  if (age >= 20 && age < 24)
-    return {
-      instructions: `Phase Pré-Adulte (20-25 ans) :
-    - Conséquences importantes mais pas définitives
-    - Dilemmes complexes sur son avenir
-    - Enjeux d'étude et de carrière `,
-      example: `{
-        "message": "Tu hésite à arrêter ce que tu fait pour créer ta propre entreprise...",
-        "question": {
-          "text": "Quelle voie suits-tu ?",
-          "options": [
-            {
-              "text": "Créer ta propre entreprise",
-              "healthChange": -3,
-              "moneyChange": -5,
-              "karmaChange": 2,
-              "socialChange": 1,
-              "psychologicalProfileChange": "Ambitieux",
-              "memoryChange": "Le joueur a créé sa propre entreprise et de quitter son travail actuel à l'age de 23 ans"
-            },
-            {
-              "text": "Continuer ton travail actuel",
-              "healthChange": 1,
-              "moneyChange": 2,
-              "karmaChange": -1,
-              "socialChange": 3,
-              "psychologicalProfileChange": "Pragmatique",
-              "memoryChange": "Le joueur a hésité à arrêter son travail actuel pour créer sa propre entreprise à l'age de 23 ans, mais il décide de continuer son travail actuel."
-            }
-          ]
-        }
-      }`,
-    };
-
-  if (age >= 25)
-    return {
-      instructions: `Phase Adulte (26+ ans) :
-    - Conséquences permanentes et cumulatives
-    - Dilemmes complexes avec impacts multiples
-    - Enjeux familiaux/professionnels équilibrés`,
-      example: `{
-      "message": "Tu reçois une offre de travail à l'étranger, mais ta femme ne peux pas te suivre...",
-      "question": {
-        "text": "Acceptes-tu ?",
-        "options": [
-          {
-            "text": "Oui, nouvelle aventure",
-            "healthChange": -2,
-            "moneyChange": 4,
-            "karmaChange": -1,
-            "socialChange": -3,
-            "psychologicalProfileChange": "Aventurier",
-            "memoryChange": "Le joueur a accepté l'offre de travail à l'étranger et a quitté sa famille et ses amis à l'age de 26 ans"
-          },
-          {
-            "text": "Non, rester près des miens",
-            "healthChange": 2,
-            "moneyChange": -1,
-            "karmaChange": 2,
-            "socialChange": 2,
-            "psychologicalProfileChange": "Famille",
-            "memoryChange": "Le joueur a refusé l'offre de travail à l'étranger et a resté près de sa famille et de ses amis à l'age de 26 ans"
-          }
-        ]
-      }
-    }`,
-    };
-};
-
-// Nouvelle structure de données pour les thèmes
-const AGE_THEMES: Record<string, [string, string, string, string, string]> = {
-  "0-5": [
-    "Découverte sensorielle",
-    "Motricité globale",
-    "Premiers mots",
-    "Interaction familiale",
-    "Routines quotidiennes",
-  ],
-  "6-10": [
-    "Amitiés scolaires",
-    "Apprentissage lecture",
-    "Activités extrascolaires",
-    "Responsabilités basiques",
-    "Découverte nature",
-  ],
-  "11-15": [
-    "Autonomie progressive",
-    "Gestion temps libre",
-    "Argent de poche",
-    "Orientation scolaire",
-    "Relations sociales",
-  ],
-  "16-25": [
-    "Choix études supérieures",
-    "Premier emploi",
-    "Vie sentimentale",
-    "Indépendance financière",
-    "Gestion logement",
-  ],
-  "26+": [
-    "Carrière professionnelle",
-    "Vie familiale",
-    "Santé long terme",
-    "Investissements",
-    "Transmission valeurs",
-  ],
-};
-
-// Nouvelle logique de récupération du thème
-const getCurrentTheme = (age: number, interactionIndex: number) => {
-  const phase =
-    age <= 5
-      ? "0-5"
-      : age <= 10
-      ? "6-10"
-      : age <= 15
-      ? "11-15"
-      : age <= 25
-      ? "16-25"
-      : "26+";
-
-  return AGE_THEMES[phase][interactionIndex % 5];
-};
 
 // Modifier le schema des options avec des valeurs par défaut explicites
 const optionSchema = z.object({
@@ -359,6 +79,7 @@ const generateKarmaPrompt = (user: User): string => {
       `DIRECTIVES:\n` +
       `- Proposer 1 option illégale mais rentable\n` +
       `- Rendre les conséquences morales ambiguës\n` +
+      `- ¨Plus de risque de perdre sa famille ou de pedre la vie à cause d'une maladie ou d'un accident mortel\n` +
       `- Cibler les faiblesses liés à cette liste de traits: ${
         user.psychologicalProfile.join(", ") || "Aucune"
       }\n`;
@@ -564,6 +285,12 @@ export const buildMasterPrompt = (user: User): string => {
 - Propose **2 choix**, chacun ayant un impact sur les statistiques du joueur (santé, argent, karma, social, psychologie).
 - Ajoute des **événements aléatoires** qui rendent le jeu imprévisible, tu peux ajouter des pièges, des opportunités, des évènements qui changent la vie du joueur.
 - Formate ta réponse en JSON.
+- Met en place des dilemmes moraux percutants avec des conséquences lourdes.
+- Rends chaque décision émotionnellement engageante et crédible, en mettant en avant des thématiques comme l'amour, la trahison, la corruption, la survie et l'éthique.
+- Les conséquences ne doivent pas être immédiates, certaines doivent se révéler plus tard dans l'histoire.
+- Assure-toi que les choix ne soient pas évidents : chaque option doit comporter un risque ou une perte importante.
+- Développe des descriptions immersives pour que le joueur ressente le poids de sa décision.
+- Pas de retour en arrière possible après un choix.
 - Quand tu introduis des personnages secondaires, introduit leur nom et prend soin de le conserver dans la mémoire du joueur.
 - Le joueur meurt si il passe en dessous de 0 points de santé, son karma peut aller de -100 à +100, son argent peut aller de -10000000000 à +10000000000, son indice de sociabilité peut aller de -100 à +100.
 
@@ -696,10 +423,10 @@ export async function POST(req: Request) {
     }
 
     const result = await generateObject({
-      model: ollama("llama3.2:3b"),
+      model: ollama("llama3.1"),
       prompt: generatedPrompt,
       schema: mainSchema,
-      temperature: 0.5, // Réduire encore la créativité
+      temperature: 0.9, // Réduire encore la créativité
     });
 
     // Validation stricte
