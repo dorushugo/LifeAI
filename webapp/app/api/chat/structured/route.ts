@@ -73,7 +73,7 @@ const generateKarmaPrompt = (user: User): string => {
   const karma = user.karma;
   let prompt = `\n\n## INFLUENCE KARMA (${karma}/100)\n`;
 
-  if (karma < -30) {
+  if (karma < -10) {
     prompt +=
       `INFORMATION: L'utilisateur à un score de karma négatif, il est donc plus susceptible pour toi de lui proposer des choix illégaux, des pièges ou des options risquées.\n` +
       `DIRECTIVES:\n` +
@@ -126,11 +126,12 @@ const generateHealthPrompt = (user: User): string => {
   const health = user.health;
   let prompt = `\n\n## INFLUENCE SANTÉ (${health}/100)\n`;
 
-  if (health < 30) {
+  if (health < 50) {
     prompt +=
       `INFORMATION: Santé critique\n` +
       `DIRECTIVES:\n` +
       `- Introduire des choix impactant la survie\n`;
+      `- Développement maladie grave qui peuvent être mortel qui finira par tuer l'utilisateur\n`;
   } else if (health > 80) {
     prompt +=
       `INFORMATION: Excellente condition physique\n` +
@@ -159,17 +160,19 @@ const generateAgePrompt = (user: User): string => {
     prompt +=
       `INFORMATION: Le joueur est au stade de l'age adulte\n` +
       `DIRECTIVES:\n` +
-      `- Limiter les conséquences permanentes\n`;
+      `- Les choix peuvent avoir des conséquences permanentes\n`;
   } else if (age > 60) {
     prompt +=
       `INFORMATION SUR L'ÂGE DU JOUEUR: Fin de carrière\n` +
       `DIRECTIVES:\n` +
       `- Introduire des enjeux de transmission\n`;
+      `- Dévelopepr l'envie de faire des activitées uniques avant de mourir\n`;
   } else {
     prompt +=
       `INFORMATION SUR L'ÂGE DU JOUEUR: Âge actif\n` +
       `DIRECTIVES:\n` +
       `- Augmenter progressivement les enjeux\n`;
+      `- Développer positivement ou négativement les thèmes comme la famille, l'amour, les amis\n`;
   }
 
   return prompt;
@@ -191,7 +194,13 @@ const generateSocialPrompt = (user: User): string => {
       `DIRECTIVES:\n` +
       `- Introduire des opportunités relationnelles\n` +
       `- Utiliser le capital social comme ressource\n`;
-  } else {
+  } else if (social < 10) {
+    prompt +=
+      `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Grand réseau social\n` +
+      `DIRECTIVES:\n` +
+      `- Développement de tendances psychopathes\n` +
+      `- Utiliser le capital social comme ressource\n`;
+  }else {
     prompt +=
       `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Réseau social moyen\n` +
       `DIRECTIVES:\n` +
