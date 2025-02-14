@@ -130,7 +130,7 @@ const generateHealthPrompt = (user: User): string => {
       `INFORMATION: Santé critique\n` +
       `DIRECTIVES:\n` +
       `- Introduire des choix impactant la survie\n` +
-      `- Développement maladie grave qui peuvent être mortel qui finira par tuer l'utilisateur\n`;
+      `- Développement d'une ou plusierus maladie grave qui sont mortel qui finira par tuer l'utilisateur\n`;
   } else if (health > 80) {
     prompt +=
       `INFORMATION: Excellente condition physique\n` +
@@ -159,8 +159,7 @@ const generateAgePrompt = (user: User): string => {
     prompt +=
       `INFORMATION: Le joueur est au stade de l'age adulte\n` +
       `DIRECTIVES:\n` +
-      `- Les choix peuvent avoir des conséquences permanentes\n` +
-      `- Les choix peuvent avoir des conséquences mortelles\n`;
+      `- Les choix n'ont pas de conséquences permanentes\n`;
   } else if (age > 60) {
     prompt +=
       `INFORMATION SUR L'ÂGE DU JOUEUR: Fin de carrière\n` +
@@ -194,7 +193,7 @@ const generateSocialPrompt = (user: User): string => {
       `DIRECTIVES:\n` +
       `- Introduire des opportunités relationnelles\n` +
       `- Utiliser le capital social comme ressource\n`;
-  } else if (social < 10) {
+  } else if (social < 1) {
     prompt +=
       `INFORMATION SUR LES CARACTÉRISTIQUES SOCIALES DU JOUEUR: Grand réseau social\n` +
       `DIRECTIVES:\n` +
