@@ -285,7 +285,7 @@ const generateSchemaRequirements = (): string => {
 
 // ================= COMBINAISON FINALE =================
 
-export const buildMasterPrompt = (user: User): string => {
+const buildMasterPrompt = (user: User): string => {
   let prompt = `ROLE: Tu es un assistant narratif dans un jeu de simulation de vie où le joueur prend des décisions influençant son destin.
  
 **Règles :**
