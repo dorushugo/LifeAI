@@ -310,7 +310,6 @@ export default function Home() {
       >
         <Sidebar
           user={user}
-          className="flex-shrink-0"
           onOpenProfile={handleOpenProfile}
           onOpenMemory={handleOpenMemory}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
