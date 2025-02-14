@@ -201,7 +201,7 @@ export default function QuestionReponse({
           (t) => t !== option.psychologicalProfileChange
         ),
         option.psychologicalProfileChange,
-      ].slice(-6),
+      ].slice(-10),
       memory: [
         ...user.memory,
         ...(option.memoryChange
@@ -212,7 +212,7 @@ export default function QuestionReponse({
                 " ans",
             ]
           : []),
-      ].slice(-10),
+      ].slice(-100),
       interactionCount: user.interactionCount + 1,
     };
 
