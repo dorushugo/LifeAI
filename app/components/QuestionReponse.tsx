@@ -150,15 +150,11 @@ export default function QuestionReponse({
           throw new Error(`HTTP error! status: ${response.status}`);
         return await response.json();
       } catch (e) {
-        setHasError(true);
+        console.error("Erreur API:", e);
         throw e;
       } finally {
         setIsNextQuestionLoading(false);
       }
-    },
-    onError: (error) => {
-      console.error("Erreur API:", error);
-      setTimeout(() => setHasError(true), 0); // Décalage pour éviter les conflits d'état
     },
     retry: 0,
     enabled: !!user,
