@@ -72,6 +72,7 @@ const generateKarmaPrompt = (user: User): string => {
   let prompt = `\n\n## INFLUENCE KARMA (${karma}/100)\n`;
 
   if (karma < -10) {
+  if (karma < -10) {
     prompt +=
       `INFORMATION: L'utilisateur à un score de karma négatif, il est donc plus susceptible pour toi de lui proposer des choix illégaux, des pièges ou des options risquées.\n` +
       `DIRECTIVES:\n` +
@@ -159,12 +160,13 @@ const generateAgePrompt = (user: User): string => {
       `INFORMATION: Le joueur est au stade de l'age adulte\n` +
       `DIRECTIVES:\n` +
       `- Les choix peuvent avoir des conséquences permanentes\n`;
+      `- Les choix peuvent avoir des conséquences permanentes\n`;
   } else if (age > 60) {
     prompt +=
       `INFORMATION SUR L'ÂGE DU JOUEUR: Fin de carrière\n` +
       `DIRECTIVES:\n` +
       `- Introduire des enjeux de transmission\n` +
-      `- Dévelopepr l'envie de faire des activitées uniques avant de mourir\n`;
+      `- Développer l'envie de faire des activitées uniques avant de mourir\n`;
   } else {
     prompt +=
       `INFORMATION SUR L'ÂGE DU JOUEUR: Âge actif\n` +
